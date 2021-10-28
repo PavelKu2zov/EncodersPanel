@@ -14,7 +14,8 @@
 //
 //                Global (public) functions:
 //                  MCP23017_Init
-//                  
+//                  MCP23017_GetPortA
+//                  MCP23017_GetPortB    
 //
 //                Local (private) functions:
 //                  MCP23017_WriteReg
@@ -37,8 +38,6 @@
 
 // Native header
 #include "MCP23017_drv.h"
-
-#include "stm32f10x.h"
 
 
 
@@ -79,7 +78,7 @@
 #define MCP23017_INTCONA            (0x08)
 #define MCP23017_INTCONB            (0x09)
 #define MCP23017_IOCON              (0x0A)
-#define MCP23017_IOCON              (0x0B)
+//#define MCP23017_IOCON              (0x0B)
 #define MCP23017_GPPUA              (0x0C)
 #define MCP23017_GPPUB              (0x0D)
 #define MCP23017_INTFA              (0x0E)
@@ -103,8 +102,10 @@
 // Declarations of local (private) functions
 //**************************************************************************************************
 
-// None.
+static void MCP23017_WriteReg(const uint8_t reg,
+                              const uint8_t data);
 
+static uint8_t MCP23017_ReadReg(const uint8_t reg);
 
 //**************************************************************************************************
 //==================================================================================================
@@ -125,10 +126,10 @@
 //--------------------------------------------------------------------------------------------------
 // @Parameters    None.
 //**************************************************************************************************
-void MCP23017_Init(void);
+void MCP23017_Init(void)
 {
     // Init GPIO for i2c
-    GPIO_InitTypeDef GPIO_InitStruct
+    GPIO_InitTypeDef GPIO_InitStruct;
     GPIO_InitStruct.GPIO_Pin = MCP23017_PIN_SDA | MCP23017_PIN_SCL;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;
@@ -147,8 +148,8 @@ void MCP23017_Init(void);
     
     I2C_Cmd(MCP23017_I2C, ENABLE);
 	
-	// Configuration ports - input
-	MCP23017_WriteReg(MCP23017_IODIRA,0xff);
+    // Configuration ports - input
+    MCP23017_WriteReg(MCP23017_IODIRA,0xff);
     MCP23017_WriteReg(MCP23017_IODIRB,0xff);                       
     
 } // end of MCP23017_Init()
@@ -174,9 +175,9 @@ void MCP23017_Init(void);
 //--------------------------------------------------------------------------------------------------
 // @Parameters    None.
 //**************************************************************************************************
-uint8_t MCP23017_GetPortA(void);
+uint8_t MCP23017_GetPortA(void)
 {
-	return MCP23017_ReadReg(MCP23017_GPIOA);
+    return MCP23017_ReadReg(MCP23017_GPIOA);
 } // end of MCP23017_GetPortA()
 
 
@@ -192,9 +193,9 @@ uint8_t MCP23017_GetPortA(void);
 //--------------------------------------------------------------------------------------------------
 // @Parameters    None.
 //**************************************************************************************************
-uint8_t MCP23017_GetPortB(void);
+uint8_t MCP23017_GetPortB(void)
 {
-	return MCP23017_ReadReg(MCP23017_GPIOB);
+    return MCP23017_ReadReg(MCP23017_GPIOB);
 } // end of MCP23017_GetPortB()
 
 

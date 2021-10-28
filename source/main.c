@@ -13,13 +13,30 @@
 volatile uint8_t encoder_status = INIT;
 volatile uint8_t encoder_direction = FORWARD;
 char buffer[80];
+
+uint8_t DataPortA = 0;
+uint8_t DataPortB = 0;
+
 void USARTSend(const unsigned char *pucBuffer, uint8_t size);
 int main(void)
 {
 Init();
+MCP23017_Init();
 
 while(1)
 {
+    DataPortA = MCP23017_GetPortA();
+    DataPortB = MCP23017_GetPortB();
+  
+    
+  
+  
+  
+  
+  
+  
+  
+  
   if (encoder_status)
     {
        encoder_status = NOREADY;
