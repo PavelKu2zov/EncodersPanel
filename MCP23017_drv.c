@@ -13,12 +13,12 @@
 //                  None.
 //
 //                Global (public) functions:
-//                  MODULE_functionZero()
-//                  MODULE_functionOne()
+//                  MCP23017_Init
+//                  
 //
 //                Local (private) functions:
-//                  MODULE_functionTwo()
-//                  MODULE_functionThree()
+//                  MCP23017_WriteReg
+//                  MCP23017_ReadReg
 //
 //--------------------------------------------------------------------------------------------------
 // @Version       1.0.0
@@ -38,7 +38,7 @@
 // Native header
 #include "MCP23017_drv.h"
 
-
+#include "stm32f10x.h"
 
 
 
@@ -60,61 +60,36 @@
 // Declarations of local (private) data types
 //**************************************************************************************************
 
-// [Description...]
-typedef DATA_TYPE MODULE_DATA_TYPE_THREE;
-
-// [Description...]
-typedef struct MODULE_DATA_TYPE_FOUR_struct
-{
-    DATA_TYPE fieldZero;
-    DATA_TYPE fieldOne;
-} MODULE_DATA_TYPE_FOUR;
-
-// [Description...]
-typedef union MODULE_DATA_TYPE_FIVE_union
-{
-    struct fieldZero_struct
-    {
-        DATA_TYPE fieldZero;
-        DATA_TYPE fieldOne;
-    } fieldZero;
-    
-    DATA_TYPE fieldOne;
-} MODULE_DATA_TYPE_FIVE;
-
+// None.
 
 
 //**************************************************************************************************
 // Definitions of local (private) constants
 //**************************************************************************************************
 
-// Control register summary bank == 1
-// portA
+// Control register summary bank == 0
 #define MCP23017_IODIRA             (0x00)
-#define MCP23017_IPOLA              (0x01)
-#define MCP23017_GPINTENA           (0x02)
-#define MCP23017_DEFVALA            (0x03)
-#define MCP23017_INTCONA            (0x04)
-#define MCP23017_IOCON              (0x05)
-#define MCP23017_GPPUA              (0x06)
-#define MCP23017_INTFA              (0x07)
-#define MCP23017_INTCAPA            (0x08)
-#define MCP23017_GPIOA              (0x09)
-#define MCP23017_OLATA              (0x0A)   
-
-//portB
-#define MCP23017_IODIRB             (0x10)
-#define MCP23017_IPOLB              (0x11)
-#define MCP23017_GPINTENB           (0x12)
-#define MCP23017_DEVVALB            (0x13)
-#define MCP23017_INTCONB            (0x14)
-#define MCP23017_IOCON              (0x15)
-#define MCP23017_GPPUB              (0x16)
-#define MCP23017_INTFB              (0x17)
-#define MCP23017_INTCAPB            (0x18)
-#define MCP23017_GPIOB              (0x19)
-#define MCP23017_OLATB              (0x1A)   
-
+#define MCP23017_IODIRB             (0x01)
+#define MCP23017_IPOLA              (0x02)
+#define MCP23017_IPOLB              (0x03)
+#define MCP23017_GPINTENA           (0x04)
+#define MCP23017_GPINTENB           (0x05)
+#define MCP23017_DEFVALA            (0x06)
+#define MCP23017_DEVVALB            (0x07)
+#define MCP23017_INTCONA            (0x08)
+#define MCP23017_INTCONB            (0x09)
+#define MCP23017_IOCON              (0x0A)
+#define MCP23017_IOCON              (0x0B)
+#define MCP23017_GPPUA              (0x0C)
+#define MCP23017_GPPUB              (0x0D)
+#define MCP23017_INTFA              (0x0E)
+#define MCP23017_INTFB              (0x0F)
+#define MCP23017_INTCAPA            (0x10)
+#define MCP23017_INTCAPB            (0x11)
+#define MCP23017_GPIOA              (0x12)
+#define MCP23017_GPIOB              (0x13)
+#define MCP23017_OLATA              (0x14)   
+#define MCP23017_OLATB              (0x15) 
 
 
 //**************************************************************************************************
@@ -128,15 +103,7 @@ typedef union MODULE_DATA_TYPE_FIVE_union
 // Declarations of local (private) functions
 //**************************************************************************************************
 
-// [Description...]
-static DATA_TYPE MODULE_FunctionTwo(DATA_TYPE parameterZero,
-                                    DATA_TYPE parameterOne);
-
-// [Description...]
-static DATA_TYPE MODULE_FunctionThree(DATA_TYPE parameterZero,
-                                      DATA_TYPE parameterOne,
-                                      DATA_TYPE parameterTwo);
-
+// None.
 
 
 //**************************************************************************************************
@@ -178,39 +145,13 @@ void MCP23017_Init(void);
     I2C_InitStruct.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
     I2C_Init(MCP23017_I2C, &I2C_InitStruct);
     
-    
+    I2C_Cmd(MCP23017_I2C, ENABLE);
+	
+	// Configuration ports - input
+	MCP23017_WriteReg(MCP23017_IODIRA,0xff);
+    MCP23017_WriteReg(MCP23017_IODIRB,0xff);                       
     
 } // end of MCP23017_Init()
-
-
-
-//**************************************************************************************************
-// @Function      MODULE_FunctionOne()
-//--------------------------------------------------------------------------------------------------
-// @Description   [description...]
-//--------------------------------------------------------------------------------------------------
-// @Notes
-//--------------------------------------------------------------------------------------------------
-// @ReturnValue   returnValue - [description...]
-//--------------------------------------------------------------------------------------------------
-// @Parameters    parameterZero - [description...]
-//                parameterOne  - [description...]
-//**************************************************************************************************
-DATA_TYPE MODULE_FunctionOne(DATA_TYPE parameterZero,
-                             DATA_TYPE parameterOne)
-{
-    DATA_TYPE returnValue;
-    
-    // [Description...]
-    DATA_TYPE idx = 0;
-    for ( ; idx < MAX; idx++)
-    {
-        arrayResult[idx] = arrayInitial[idx];
-    }
-    
-    return returnValue;
-    
-} // end of MODULE_FunctionOne()
 
 
 
@@ -223,68 +164,103 @@ DATA_TYPE MODULE_FunctionOne(DATA_TYPE parameterZero,
 
 
 //**************************************************************************************************
-// @Function      MODULE_FunctionTwo()
+// @Function      MCP23017_GetPortA()
 //--------------------------------------------------------------------------------------------------
-// @Description   [description...]
+// @Description   Get value Port A
 //--------------------------------------------------------------------------------------------------
-// @Notes
+// @Notes		  None.
 //--------------------------------------------------------------------------------------------------
-// @ReturnValue   returnValue - [description...]
+// @ReturnValue   Value of Port A
 //--------------------------------------------------------------------------------------------------
-// @Parameters    parameterZero - [description...]
-//                parameterOne  - [description...]
+// @Parameters    None.
 //**************************************************************************************************
-static void MCP23017_WriteReg(uint8_t reg,
-                              uint8_t value)
+uint8_t MCP23017_GetPortA(void);
 {
-    DATA_TYPE returnValue;
-    
-    // [Description...]
-    switch (expression)
-    {
-        case CASE_ONE:
-            caseOneCnt++;
-            break;
+	return MCP23017_ReadReg(MCP23017_GPIOA);
+} // end of MCP23017_GetPortA()
 
-        case CASE_TWO:
-            caseTwoCnt++;
-            break;
 
-        default:
-            caseDefaultCnt++;
-            break;
-    } // end of switch (expression)
-    
-    return returnValue;
+
+//**************************************************************************************************
+// @Function      MCP23017_GetPortB()
+//--------------------------------------------------------------------------------------------------
+// @Description   Get value Port B
+//--------------------------------------------------------------------------------------------------
+// @Notes		  None.
+//--------------------------------------------------------------------------------------------------
+// @ReturnValue   Value of Port B
+//--------------------------------------------------------------------------------------------------
+// @Parameters    None.
+//**************************************************************************************************
+uint8_t MCP23017_GetPortB(void);
+{
+	return MCP23017_ReadReg(MCP23017_GPIOB);
+} // end of MCP23017_GetPortB()
+
+
+
+//**************************************************************************************************
+// @Function      MCP23017_WriteReg()
+//--------------------------------------------------------------------------------------------------
+// @Description   Write one byte in reg
+//--------------------------------------------------------------------------------------------------
+// @Notes		  None.
+//--------------------------------------------------------------------------------------------------
+// @ReturnValue   None.
+//--------------------------------------------------------------------------------------------------
+// @Parameters    reg - device register
+//                data  - data to write in reg
+//**************************************************************************************************
+static void MCP23017_WriteReg(const uint8_t reg,
+                              const uint8_t data)
+{
+    I2C_GenerateSTART(MCP23017_I2C, ENABLE);
+	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));
+	
+	I2C_Send7bitAddress(MCP23017_I2C, MCP23017_OPCODE, I2C_Direction_Transmitter);
+	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	
+	I2C_SendData(MCP23017_I2C, data);
+	
+    while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	
+	I2C_GenerateSTOP(MCP23017_I2C, ENABLE);
     
 } // end of MCP23017_WriteReg()
 
 
 
 //**************************************************************************************************
-// @Function      MODULE_FunctionThree()
+// @Function      MCP23017_ReadReg()
 //--------------------------------------------------------------------------------------------------
-// @Description   [description...]
+// @Description   Read one byte from reg
 //--------------------------------------------------------------------------------------------------
-// @Notes
+// @Notes		  None.	
 //--------------------------------------------------------------------------------------------------
-// @ReturnValue   returnValue - [description...]
+// @ReturnValue   value from reg
 //--------------------------------------------------------------------------------------------------
-// @Parameters    parameterZero - [description...]
-//                parameterOne  - [description...]
-//                parameterTwo  - [description...]
+// @Parameters    reg - device register
 //**************************************************************************************************
-static DATA_TYPE MODULE_FunctionThree(DATA_TYPE parameterZero,
-                                      DATA_TYPE parameterOne,
-                                      DATA_TYPE parameterTwo)
+static uint8_t MCP23017_ReadReg(const uint8_t reg)
 {
-    DATA_TYPE returnValue;
+	uint8_t data;
+	
+	I2C_GenerateSTART(MCP23017_I2C, ENABLE);
+	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));
+	
+	I2C_Send7bitAddress(MCP23017_I2C, MCP23017_OPCODE, I2C_Direction_Receiver);
+	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_RECEIVED));
+    data = I2C_ReceiveData(MCP23017_I2C);
+	
+	I2C_GenerateSTOP(MCP23017_I2C, ENABLE);
     
-    // [Place code here]
-    
-    return returnValue;
-    
-} // end of MODULE_FunctionThree()
+	return data;
+	
+} // end of MCP23017_ReadReg()
 
 
 
