@@ -17,12 +17,6 @@ void Init()
   GPIO_DeInit(GPIOA);
   GPIO_InitTypeDef GPIO_InitStruct;
   
-  //для Encoder
-  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
-  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
-  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;   
-  GPIO_Init(GPIOA, &GPIO_InitStruct);
-  
   //Uart tx
   GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -36,14 +30,12 @@ void Init()
   
   //36 MHz clock
   TIM_TimeBaseInitStruct.TIM_Prescaler = 0;
-  TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up | TIM_CounterMode_Down;
-  TIM_TimeBaseInitStruct.TIM_Period = 1;
+  TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInitStruct.TIM_Period = 0xffff;
   TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
   TIM_TimeBaseInitStruct.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM2,&TIM_TimeBaseInitStruct);
   
-  TIM_EncoderInterfaceConfig(TIM2, TIM_EncoderMode_TI1, TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
-  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
   TIM_Cmd(TIM2, ENABLE);  																			 
   
   /********************************Настройка Usart2***************************/
