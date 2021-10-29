@@ -22,40 +22,15 @@
 // Project Includes
 //**************************************************************************************************
 
-// Get data types
-#include "compiler.h"
+#include "stm32f10x.h"
 
-// Get generic definitions
-#include "general.h"
-
-// Get configuration of the program module
-#include "module_cfg.h"
-
-
+#include "MCP23017_cfg.h"
 
 //**************************************************************************************************
 // Declarations of global (public) data types
 //**************************************************************************************************
 
-// [Description...]
-typedef DATA_TYPE MODULE_DATA_TYPE_ZERO;
-
-// [Description...]
-typedef enum
-{
-    MODULE_DATA_TYPE_ONE_CONST_ZERO,  // [Description...]
-    MODULE_DATA_TYPE_ONE_CONST_ONE,   // [Description...]
-    MODULE_DATA_TYPE_ONE_CONST_TWO,   // [Description...]
-    MODULE_DATA_TYPE_ONE_CONST_THREE, // [Description...]
-} MODULE_DATA_TYPE_ONE;
-
-// [Description...]
-typedef struct MODULE_DATA_TYPE_TWO_struct
-{
-    DATA_TYPE fieldZero; // [Description...]
-    DATA_TYPE fieldOne;  // [Description...]
-} MODULE_DATA_TYPE_TWO;
-
+// None.
 
 
 //**************************************************************************************************
@@ -69,12 +44,7 @@ typedef struct MODULE_DATA_TYPE_TWO_struct
 // Declarations of global (public) variables
 //**************************************************************************************************
 
-// [Description...]
-extern DATA_TYPE MODULE_variableZero;
-
-// [Description...]
-extern DATA_TYPE MODULE_variableOne;
-
+// None.
 
 
 //**************************************************************************************************

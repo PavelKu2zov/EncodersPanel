@@ -22,22 +22,6 @@
 // Definitions of global (public) constants
 //**************************************************************************************************
 
-// Enable/disable the development error detection feature of the program module.
-// Used only for debug purposes and should be disabled in the final release.
-// Valid values: ON / OFF
-#define MODULE_DEVELOPMENT_ERROR_DETECTION      (OFF)
-
-// User can enable/disable the internal diagnostic of the program module.
-// Used only for debug purposes and should be disabled in the final release.
-// Valid values: ON / OFF
-#define MODULE_INTERNAL_DIAGNOSTICS             (OFF)
-
-
-
-// User can enable/disable...
-// Valid values: ON / OFF
-#define MODULE_PARAMETER_ZERO                   (OFF)
-
 // User can specify OPCODE
 #define MCP23017_OPCODE                         (0x40)
 
@@ -54,7 +38,7 @@
 #define MCP23017_I2C                            (I2C2)
 
 // User can specify I2C clock speed
-#define MCP23017_I2C_ClockSpeed                 (5000)
+#define MCP23017_I2C_ClockSpeed                 (100000)
 
 #endif // #ifndef MCP23017_CFG_H
 
