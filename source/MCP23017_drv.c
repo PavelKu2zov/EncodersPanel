@@ -107,6 +107,8 @@ static void MCP23017_WriteReg(const uint8_t reg,
 
 static uint8_t MCP23017_ReadReg(const uint8_t reg);
 
+static void MCP23017_Reset(void);
+
 //**************************************************************************************************
 //==================================================================================================
 // Definitions of global (public) functions
@@ -128,12 +130,36 @@ static uint8_t MCP23017_ReadReg(const uint8_t reg);
 //**************************************************************************************************
 void MCP23017_Init(void)
 {
-    // Init GPIO for i2c
+    // Init GPIO for nRST
     GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitStruct.GPIO_Pin = MCP23017_PIN_nRST;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+    GPIO_Init(MCP23017_PORT_RST, &GPIO_InitStruct);
+	
+    // Init GPIO for toggles POS2
+    GPIO_InitStruct.GPIO_Pin = MCP23017_PIN_TOGGLES_POS2;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_Init(MCP23017_PORT_TOGGLES_POS2, &GPIO_InitStruct);
+    
+    // Init GPIO for button encoder's NUM8
+    GPIO_InitStruct.GPIO_Pin = MCP23017_PIN_BUT_ENCOD_NUM8;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_Init(MCP23017_PORT_BUT_ENCOD_NUM8, &GPIO_InitStruct);
+    
+    // Init GPIO for button encoder's NUM1
+    GPIO_InitStruct.GPIO_Pin = MCP23017_PIN_BUT_ENCOD_NUM1;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_Init(MCP23017_PORT_BUT_ENCOD_NUM1, &GPIO_InitStruct);
+    
+	// Init GPIO for i2c
     GPIO_InitStruct.GPIO_Pin = MCP23017_PIN_SDA | MCP23017_PIN_SCL;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF_OD;
-    GPIO_Init(MCP23017_PORT, &GPIO_InitStruct);
+    GPIO_Init(MCP23017_PORT_I2C, &GPIO_InitStruct);
     
     // Init i2c
     I2C_DeInit(MCP23017_I2C);
@@ -148,10 +174,17 @@ void MCP23017_Init(void)
     
     I2C_Cmd(MCP23017_I2C, ENABLE);
 	
+	// RESET MCP23017
+	MCP23017_Reset();
+	
     // Configuration ports - input
     MCP23017_WriteReg(MCP23017_IODIRA,0xff);
-    MCP23017_WriteReg(MCP23017_IODIRB,0xff);                       
-    
+    MCP23017_WriteReg(MCP23017_IODIRB,0xff);   
+
+	// set pull-up resistor 		
+    MCP23017_WriteReg(MCP23017_GPPUA,0xff);
+    MCP23017_WriteReg(MCP23017_GPPUB,0xff);
+	
 } // end of MCP23017_Init()
 
 
@@ -178,6 +211,8 @@ void MCP23017_Init(void)
 uint8_t MCP23017_GetPortA(void)
 {
     return MCP23017_ReadReg(MCP23017_GPIOA);
+	//return MCP23017_ReadReg(MCP23017_IODIRA);
+	
 } // end of MCP23017_GetPortA()
 
 
@@ -217,15 +252,22 @@ static void MCP23017_WriteReg(const uint8_t reg,
 {
     I2C_GenerateSTART(MCP23017_I2C, ENABLE);
 	
-	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));
-	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));//EV5
+		
+	// Send OPCODE
 	I2C_Send7bitAddress(MCP23017_I2C, MCP23017_OPCODE, I2C_Direction_Transmitter);
 	
-	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)); // EV6
 	
+	// Send ADDR Reg
+	I2C_SendData(MCP23017_I2C, reg);
+	
+    while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));//EV8_2
+	
+	// Send data
 	I2C_SendData(MCP23017_I2C, data);
 	
-    while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));//EV8_2
 	
 	I2C_GenerateSTOP(MCP23017_I2C, ENABLE);
     
@@ -248,15 +290,32 @@ static uint8_t MCP23017_ReadReg(const uint8_t reg)
 {
 	uint8_t data;
 	
+	I2C_AcknowledgeConfig(MCP23017_I2C, DISABLE);
+	
 	I2C_GenerateSTART(MCP23017_I2C, ENABLE);
 	
-	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));//EV5
+		
+	// Send OPCODE
+	I2C_Send7bitAddress(MCP23017_I2C, MCP23017_OPCODE, I2C_Direction_Transmitter);
 	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)); // EV6
+	
+	// Send ADDR Reg
+	I2C_SendData(MCP23017_I2C, reg);
+	
+    while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_TRANSMITTED));//EV8_2
+	
+	// Repeated start
+	I2C_GenerateSTART(MCP23017_I2C, ENABLE);
+	
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_MODE_SELECT));//EV5
+	
+	// Send OPCODE
 	I2C_Send7bitAddress(MCP23017_I2C, MCP23017_OPCODE, I2C_Direction_Receiver);
 	
-	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_RECEIVED));
+	while(!I2C_CheckEvent(MCP23017_I2C, I2C_EVENT_MASTER_BYTE_RECEIVED));//EV7
     data = I2C_ReceiveData(MCP23017_I2C);
-	
 	I2C_GenerateSTOP(MCP23017_I2C, ENABLE);
     
 	return data;
@@ -264,5 +323,30 @@ static uint8_t MCP23017_ReadReg(const uint8_t reg)
 } // end of MCP23017_ReadReg()
 
 
+
+//**************************************************************************************************
+// @Function      MCP23017_Reset()
+//--------------------------------------------------------------------------------------------------
+// @Description   Read one byte from reg
+//--------------------------------------------------------------------------------------------------
+// @Notes		  None.	
+//--------------------------------------------------------------------------------------------------
+// @ReturnValue   value from reg
+//--------------------------------------------------------------------------------------------------
+// @Parameters    reg - device register
+//**************************************************************************************************
+static void MCP23017_Reset(void)
+{
+	GPIO_SetBits(MCP23017_PORT_RST, MCP23017_PIN_nRST);
+	
+	for (int i=0;i<0xfff;i++);
+	
+	GPIO_ResetBits(MCP23017_PORT_RST, MCP23017_PIN_nRST);
+	
+	for (int i=0;i<0xfff;i++);
+	
+	GPIO_SetBits(MCP23017_PORT_RST, MCP23017_PIN_nRST);
+	
+} // end of MCP23017_Reset()
 
 //****************************************** end of file *******************************************

@@ -1,5 +1,7 @@
 #include "stm32f10x.h"
 #define ARR     144
+
+#define DEVICE_SIZE_BUF_USART2		(256)	
 void Init(void);
 
 typedef enum
