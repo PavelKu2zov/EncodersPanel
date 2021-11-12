@@ -55,6 +55,8 @@
 
 #define DEVICE_NUM_TOGGLES_POS3         (1)
 
+#define DEVICE_NUMBER_CNT               (254)
+
 uint8_t bufferUartTx[DEVICE_SIZE_BUF_USART2];
 
 
@@ -120,6 +122,8 @@ static uint8_t index=0;
 static uint8_t testBuf[256];
 
 static uint8_t flagAllowSwitchButEncoderOptic = 0;
+
+static uint8_t flagsAllowSwitchBut[6];
 //**************************************************************************************************
 // Declarations of local (private) functions
 //**************************************************************************************************
@@ -153,6 +157,7 @@ void Delay( uint16_t time );
 //--------------------------------------------------------------------------------------------------
 // @Parameters    parameterZero - [description...]
 //**************************************************************************************************
+
 
 
 
@@ -250,7 +255,7 @@ while(1)
         USARTSend(bufferUartTx,nSize);
         DEVICE_control.encoder[0] = NOT_ROTATION;
     }
-
+   
 /**************************** Encoder 1 *************************************/
     if (NOT_ROTATION != DEVICE_control.encoder[1])
     {          
@@ -433,9 +438,200 @@ while(1)
         DEVICE_control.encoder[3] = NOT_ROTATION;
     }    
     
-    
-    
-    
+/**************************** Buttons_0 *************************************/    
+    if ( PUSHED == DEVICE_control.buttons[0])
+    {
+        static uint8_t cnt = 0;
+        if ( DEVICE_NUMBER_CNT == cnt )
+        {
+            uint8_t nSize;
+            if (POS1 == DEVICE_control.togglesPos2[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(13);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS2 == DEVICE_control.togglesPos2[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(23);
+                bufferUartTx[2] = 0x7f;
+            }
+            nSize = 3;  
+            DEVICE_control.buttons[0] = NOT_PUSHED;
+            USARTSend(bufferUartTx,nSize);
+            cnt=0;
+        }
+        else
+        {
+            cnt++;
+        }
+    }
+/**************************** Buttons_1 *************************************/    
+    if ( PUSHED == DEVICE_control.buttons[1])
+    {
+        static uint8_t cnt = 0;
+        if ( DEVICE_NUMBER_CNT == cnt )
+        {
+            uint8_t nSize;
+            if (POS1 == DEVICE_control.togglesPos2[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(14);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS2 == DEVICE_control.togglesPos2[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(24);
+                bufferUartTx[2] = 0x7f;
+            }
+            nSize = 3;  
+            DEVICE_control.buttons[1] = NOT_PUSHED;
+            USARTSend(bufferUartTx,nSize);
+            cnt=0;
+        }
+        else
+        {
+            cnt++;
+        }
+    }
+/**************************** Buttons_2 *************************************/    
+    if ( PUSHED == DEVICE_control.buttons[2])
+    {
+        static uint8_t cnt = 0;
+        if ( DEVICE_NUMBER_CNT == cnt )
+        {
+            uint8_t nSize;
+            if (POS1 == DEVICE_control.togglesPos2[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(15);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS2 == DEVICE_control.togglesPos2[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(25);
+                bufferUartTx[2] = 0x7f;
+            }
+            nSize = 3;  
+            DEVICE_control.buttons[2] = NOT_PUSHED;
+            USARTSend(bufferUartTx,nSize);
+            cnt=0;
+        }
+        else
+        {
+            cnt++;
+        }
+    }
+/**************************** Buttons_3 *************************************/    
+    if ( PUSHED == DEVICE_control.buttons[3])
+    {
+        static uint8_t cnt = 0;
+        if ( DEVICE_NUMBER_CNT == cnt )
+        {
+            uint8_t nSize;
+            if (POS1 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(33);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS2 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(43);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS3 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(53);
+                bufferUartTx[2] = 0x7f;
+            }
+            nSize = 3;  
+            DEVICE_control.buttons[3] = NOT_PUSHED;
+            USARTSend(bufferUartTx,nSize);
+            cnt=0;
+        }
+        else
+        {
+            cnt++;
+        }
+    }
+
+/**************************** Buttons_4 *************************************/    
+    if ( PUSHED == DEVICE_control.buttons[4])
+    {
+        static uint8_t cnt = 0;
+        if ( DEVICE_NUMBER_CNT == cnt )
+        {
+            uint8_t nSize;
+            if (POS1 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(34);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS2 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(44);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS3 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(54);
+                bufferUartTx[2] = 0x7f;
+            }
+            nSize = 3;  
+            DEVICE_control.buttons[4] = NOT_PUSHED;
+            USARTSend(bufferUartTx,nSize);
+            cnt=0;
+        }
+        else
+        {
+            cnt++;
+        }
+    }    
+
+/**************************** Buttons_5 *************************************/    
+    if ( PUSHED == DEVICE_control.buttons[5])
+    {
+        static uint8_t cnt = 0;
+        if ( DEVICE_NUMBER_CNT == cnt )
+        {
+            uint8_t nSize;
+            if (POS1 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(35);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS2 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(45);
+                bufferUartTx[2] = 0x7f;
+            }
+            else if (POS3 == DEVICE_control.togglesPos3[0])
+            {
+                bufferUartTx[0] = 0xb4;
+                bufferUartTx[1] = CC(55);
+                bufferUartTx[2] = 0x7f;
+            }
+            nSize = 3;  
+            DEVICE_control.buttons[5] = NOT_PUSHED;
+            USARTSend(bufferUartTx,nSize);
+            cnt=0;
+        }
+        else
+        {
+            cnt++;
+        }
+    }
     
     Delay(DEVICE_DELAY_MS);
   
@@ -569,11 +765,16 @@ static void DEVICE_GetStatusButtons(void)
     {
         if (((nNewCodeButtons << i) & 0x80) == 0x80)
         {
-            DEVICE_control.buttons[i] = PUSHED;
+            if (flagsAllowSwitchBut[i] == 1)
+            {
+                flagsAllowSwitchBut[i] = 0;  
+                DEVICE_control.buttons[i] = PUSHED;    
+            }
         }
         else
         {
-            DEVICE_control.buttons[i] = NOT_PUSHED;
+            //DEVICE_control.buttons[i] = NOT_PUSHED;
+            flagsAllowSwitchBut[i] = 1;
         }
     }
     
@@ -615,7 +816,7 @@ static void DEVICE_GetStatusButtons(void)
     }
     else if (flagAllowSwitchButEncoderOptic)
     {
-      flagAllowSwitchButEncoderOptic = 0;
+        flagAllowSwitchButEncoderOptic = 0;
         if (PUSHED == DEVICE_control.buttons[7])
         {
             DEVICE_control.buttons[7] = NOT_PUSHED;
