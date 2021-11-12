@@ -690,11 +690,18 @@ static void DEVICE_GetStatusEncoders(void)
                         {
                             if (2 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
-                                //DEVICE_control.encoder[i] = FORWARD;
+                                if (2 == i)
+                                {
+                                    DEVICE_control.encoder[i] = FORWARD;
+                                }
                             }
                             else if (1 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
-                                //DEVICE_control.encoder[i] = BACKWARD;
+                                if (2 == i)
+                                {
+                                    DEVICE_control.encoder[i] = BACKWARD;
+                                }
+                                
                             }
                         }break;
                 case 2:
@@ -705,25 +712,41 @@ static void DEVICE_GetStatusEncoders(void)
                             }
                             else if (0 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
-                                //DEVICE_control.encoder[i] = BACKWARD;
+                                if (2 == i)
+                                {
+                                    DEVICE_control.encoder[i] = BACKWARD;
+                                }                                    
+                            
                             }
                         }break;
                 case 3:
                         {
                             if (1 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
-                                //DEVICE_control.encoder[i] = FORWARD;
+                                if (2 == i)
+                                {
+                                    DEVICE_control.encoder[i] = FORWARD;   
+                                }
+                                
                             }
                             else if (2 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
-                                //DEVICE_control.encoder[i] = BACKWARD;
+                                if (2 == i)
+                                {
+                                    DEVICE_control.encoder[i] = BACKWARD;
+                                }
+                                
                             }
                         }break;
                 case 1:
                         {
                             if (0 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
-                                //DEVICE_control.encoder[i] = FORWARD;
+                                if (2 == i)
+                                {
+                                    DEVICE_control.encoder[i] = FORWARD;
+                                }
+                                
                             }
                             else if (3 == DEVICE_GET_CODE_EN(i,nNewCodeEncoders))
                             {
