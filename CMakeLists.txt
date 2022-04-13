@@ -18,7 +18,8 @@ set(CMAKE_SYSTEM_PROCESSOR cortex-m3)
 # Binary file extension
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 # Linker script file
-set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Config/stm32f103.ld)
+#set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Config/stm32f103.ld)
+set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Config/STM32F103C8_FLASH.ld)
 # Set startup file
 set(STARTUP_FILE ${CMAKE_SOURCE_DIR}/StartUp/startup_stm32f10x_md.s)
 
@@ -26,15 +27,15 @@ set(STARTUP_FILE ${CMAKE_SOURCE_DIR}/StartUp/startup_stm32f10x_md.s)
 include(compiler.cmake)
 
 add_definitions(
-        -DSTM32L151CBU6
+        -DSTM32F10X_MD
         -DUSE_STDPERIPH_DRIVER)
 
-add_compile_definitions(STM32L1XX_MD)
+#set(FREERTOS_DIR FreeRTOS/Source/)
 
-set(FREERTOS_DIR FreeRTOS/Source/)
-
-file(GLOB_RECURSE USER_SOURCES "Users/src/*.c")
-file(GLOB_RECURSE HAL_SOURCES "c:/Users/Pavel/Documents/MeteoStation_v2/STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/STM32L1xx_StdPeriph_Driver/src/*.c")
+file(GLOB_RECURSE USER_SOURCES "${CMAKE_SOURCE_DIR}/source/*.c")
+file(GLOB_RECURSE CORE_SOURCES "${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport/*.c")
+file(GLOB_RECURSE HAL_SOURCES "${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/src/*.c")
+#[[
 file(
         GLOB_RECURSE
         FREERTOS_SOURCES
@@ -49,24 +50,21 @@ file(
         "${FREERTOS_DIR}/portable/MemMang/heap_1.c"
 )
 
+]]
+include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport)
+include_directories(${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/inc)
 
-include_directories(Users/inc)
-include_directories("c:/Users/Pavel/Documents/MeteoStation_v2/STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/STM32L1xx_StdPeriph_Driver/inc")
-#include_directories("/../../STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32L1xx/Include")
-include_directories("c:/Users/Pavel/Documents/MeteoStation_v2/STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32L1xx/Include")
-#include_directories("/../STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Include")
-include_directories("c:/Users/Pavel/Documents/MeteoStation_v2/STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Include")
-#include_directories("/../STM32L1xx_StdPeriph_Lib_V1.4.0/Libraries/CMSIS/Device/ST/STM32L1xx/Include")
-
+#[[
 include_directories(${FREERTOS_DIR})
 include_directories(${FREERTOS_DIR}/include)
 include_directories(${FREERTOS_DIR}/portable/GCC/ARM_CM3/)
 #include_directories(${FREERTOS_DIR}/portable/IAR/ARM_CM3/)
 include_directories(${FREERTOS_DIR}/portable/MemMang)
 #include_directories(${FREERTOS_DIR}/portable/Common)
+]]
 
-
-add_executable(${PROJECT_NAME} ${STARTUP_FILE} ${USER_SOURCES} ${HAL_SOURCES} ${FREERTOS_SOURCES})
+add_executable(${PROJECT_NAME} ${STARTUP_FILE} ${USER_SOURCES} ${HAL_SOURCES} ${CORE_SOURCES} )#${FREERTOS_SOURCES})
 
 
 
