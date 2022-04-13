@@ -210,21 +210,21 @@ while(1)
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(30);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
             else if (POS2 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(40);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
             else if (POS3 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(50);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
         }
@@ -234,21 +234,21 @@ while(1)
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(30);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
             else if (POS2 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(40);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
             else if (POS3 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(50);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
         }
@@ -266,21 +266,21 @@ while(1)
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(31);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
             else if (POS2 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(41);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
             else if (POS3 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(51);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
         }
@@ -290,21 +290,21 @@ while(1)
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(31);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
             else if (POS2 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(41);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
             else if (POS3 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(51);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
         }
@@ -321,29 +321,29 @@ while(1)
             if (( POS1 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == NOT_PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
-                bufferUartTx[1] = CC(10);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[1] = CC(11);
+                bufferUartTx[2] = 127;
                 nSize = 3;
             }
             else if (( POS1 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
-                bufferUartTx[1] = CC(11);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[1] = CC(21);
+                bufferUartTx[2] = 127;
                 nSize = 3;
             }
             else if (( POS2 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == NOT_PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(20);
-                bufferUartTx[2] = 0x1;
+                bufferUartTx[2] = 124;
                 nSize = 3;
             }
             else if (( POS2 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
-                bufferUartTx[1] = CC(21);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[1] = CC(10);
+                bufferUartTx[2] = 124;
                 nSize = 3;
             }
         }
@@ -352,29 +352,29 @@ while(1)
             if (( POS1 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == NOT_PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
-                bufferUartTx[1] = CC(10);
-                bufferUartTx[2] = 0x1;
+                bufferUartTx[1] = CC(12);
+                bufferUartTx[2] = 127;
                 nSize = 3;
             }
             else if (( POS1 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
-                bufferUartTx[1] = CC(12);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[1] = CC(22);
+                bufferUartTx[2] = 127;
                 nSize = 3;
             }
             else if (( POS2 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == NOT_PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(20);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 4;
                 nSize = 3;
             }
             else if (( POS2 == DEVICE_control.togglesPos2[0]) && (DEVICE_control.buttons[7] == PUSHED))
             {
                 bufferUartTx[0] = 0xb4;
-                bufferUartTx[1] = CC(22);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[1] = CC(10);
+                bufferUartTx[2] = 4;
                 nSize = 3;
             }
         }
@@ -392,21 +392,21 @@ while(1)
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(32);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
             else if (POS2 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(42);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
             else if (POS3 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(52);
-                bufferUartTx[2] = 0x01;
+                bufferUartTx[2] = 109;
                 nSize = 3;
             }
         }
@@ -416,21 +416,21 @@ while(1)
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(32);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
             else if (POS2 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(42);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
             else if (POS3 == DEVICE_control.togglesPos3[0])
             {
                 bufferUartTx[0] = 0xb4;
                 bufferUartTx[1] = CC(52);
-                bufferUartTx[2] = 0x7f;
+                bufferUartTx[2] = 18;
                 nSize = 3;
             }
         }
