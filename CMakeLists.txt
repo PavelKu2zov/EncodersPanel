@@ -18,10 +18,9 @@ set(CMAKE_SYSTEM_PROCESSOR cortex-m3)
 # Binary file extension
 set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 # Linker script file
-#set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Config/stm32f103.ld)
-set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/Config/STM32F103C8_FLASH.ld)
+set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/system/STM32F103C8_FLASH.ld)
 # Set startup file
-set(STARTUP_FILE ${CMAKE_SOURCE_DIR}/StartUp/startup_stm32f10x_md.s)
+set(STARTUP_FILE ${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/system/startup_stm32f10x_md.s)
 
 # Adding compiler/linker options
 include(compiler.cmake)
@@ -32,9 +31,18 @@ add_definitions(
 
 #set(FREERTOS_DIR FreeRTOS/Source/)
 
-file(GLOB_RECURSE USER_SOURCES "${CMAKE_SOURCE_DIR}/source/*.c")
-file(GLOB_RECURSE CORE_SOURCES "${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport/*.c")
-file(GLOB_RECURSE HAL_SOURCES "${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/src/*.c")
+file(GLOB_RECURSE HARDWARE_SOURCES 
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Init.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_mcp23017/*.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/*.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/system_stm32f10x.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/CMSIS/CM3/CoreSupport/*.c"
+)
+
+file(GLOB_RECURSE APPL_SOURCES 
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw//application/main.c"
+)
+
 #[[
 file(
         GLOB_RECURSE
@@ -51,9 +59,12 @@ file(
 )
 
 ]]
-include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport)
-include_directories(${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/inc)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/application)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_mcp23017)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/CMSIS/CM3/CoreSupport)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/inc)
 
 #[[
 include_directories(${FREERTOS_DIR})
@@ -64,7 +75,12 @@ include_directories(${FREERTOS_DIR}/portable/MemMang)
 #include_directories(${FREERTOS_DIR}/portable/Common)
 ]]
 
-add_executable(${PROJECT_NAME} ${STARTUP_FILE} ${USER_SOURCES} ${HAL_SOURCES} ${CORE_SOURCES} )#${FREERTOS_SOURCES})
+add_executable(
+        ${PROJECT_NAME} 
+        ${STARTUP_FILE} 
+        ${HARDWARE_SOURCES} 
+        ${APPL_SOURCES})
+        #${FREERTOS_SOURCES})
 
 
 
