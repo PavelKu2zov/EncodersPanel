@@ -1,0 +1,16 @@
+{
+    "version": 2,
+    "configurePresets": [
+        {
+            "name": "debug",
+            "displayName": "Configure preset using toolchain file",
+            "description": "MinGW generator, build",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "toolchain.cmake"
+            }
+        }
+    ]
+}
