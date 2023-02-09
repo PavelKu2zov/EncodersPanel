@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.17)
 
 # Include system environment
-include(toolchain.cmake)
+# include(toolchain.cmake)
 
 # Set project name
 project(EncoderPanel C ASM)
@@ -33,8 +33,8 @@ add_definitions(
 #set(FREERTOS_DIR FreeRTOS/Source/)
 
 file(GLOB_RECURSE USER_SOURCES "${CMAKE_SOURCE_DIR}/source/*.c")
-file(GLOB_RECURSE CORE_SOURCES "${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport/*.c")
-file(GLOB_RECURSE HAL_SOURCES "${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/src/*.c")
+file(GLOB_RECURSE CORE_SOURCES "${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport/*.c")
+file(GLOB_RECURSE HAL_SOURCES "${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/src/*.c")
 #[[
 file(
         GLOB_RECURSE
@@ -52,8 +52,8 @@ file(
 
 ]]
 include_directories(${CMAKE_SOURCE_DIR}/include)
-include_directories(${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport)
-include_directories(${CMAKE_SOURCE_DIR}/LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/inc)
+include_directories(${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/CMSIS/CM3/CoreSupport)
+include_directories(${CMAKE_SOURCE_DIR}/../LIB/STM32F10x_StdPeriph_Lib_V3.5.0/Libraries/STM32F10x_StdPeriph_Driver/inc)
 
 #[[
 include_directories(${FREERTOS_DIR})
