@@ -45,8 +45,8 @@ typedef struct
     uint8_t        n_bit_pos_result;
     GPIO_TypeDef * nGPIOPortPin0;
     GPIO_TypeDef * nGPIOPortPin1;
-    uint8_t        nGPIOPin0;
-    uint8_t        nGPIOPin1;
+    uint16_t       nGPIOPin0;
+    uint16_t       nGPIOPin1;
     uint8_t        nGPIOPin0Mode;
     uint8_t        nGPIOPin1Mode;
     uint8_t        nChannelEn;

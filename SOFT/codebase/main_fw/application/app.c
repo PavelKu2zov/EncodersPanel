@@ -22,6 +22,7 @@
 #include <stdbool.h>
 #include "bsp.h"
 #include "encoder_drv.h"
+#include "buttons_drv.h"
 
 /******************************************************************************
  * DEFINES
@@ -35,6 +36,7 @@
  * PRIVATE DATA
  ******************************************************************************/
 static encoder_state_t encoder_states[ENCODER_QTY_CH];
+static buttons_state_t buttons_state[BUTTONS_QTY];
 /******************************************************************************
  * PUBLIC DATA
  ******************************************************************************/
@@ -69,12 +71,18 @@ void app_entry_point(void)
 {
     bsp_init();
     encoder_init();
+    buttons_init();
     for (;;)
     {
         encoder_get_channel_value(ENCODER_CH_0, &encoder_states[ENCODER_CH_0]);
         encoder_get_channel_value(ENCODER_CH_1, &encoder_states[ENCODER_CH_1]);
         encoder_get_channel_value(ENCODER_CH_2, &encoder_states[ENCODER_CH_2]);
         encoder_get_channel_value(ENCODER_CH_3, &encoder_states[ENCODER_CH_3]);
+
+        for (uint8_t i = 0; i < BUTTONS_QTY; i++)
+        {
+            buttons_state[i] = buttons_get_value(i);
+        }
         Delay(250);
     }
 }
