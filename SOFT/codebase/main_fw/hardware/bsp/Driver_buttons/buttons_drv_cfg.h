@@ -28,7 +28,7 @@ extern "C"
      ******************************************************************************/
 
 // Specify number of buttons to use
-#define BUTTONS_QTY (8U)
+#define BUTTONS_QTY (11U)
 
 #define BUTTONS_CH0_EN            (ON)// SW1
 #define BUTTONS_GPIO_PORT_CH0     GPIOA
@@ -77,6 +77,24 @@ extern "C"
 #define BUTTONS_GPIO_PIN_CH7      (GPIO_Pin_12)
 #define BUTTONS_GPIO_PIN_MODE_CH7 (GPIO_Mode_IN_FLOATING)
 #define BUTTONS_ACTIVE_CH7        (BUTTONS_ACTIVE_STATE_LOW)
+
+#define BUTTONS_CH8_EN            (ON)// toggle SW8
+#define BUTTONS_GPIO_PORT_CH8     GPIOA
+#define BUTTONS_GPIO_PIN_CH8      (GPIO_Pin_6)
+#define BUTTONS_GPIO_PIN_MODE_CH8 (GPIO_Mode_IPD)
+#define BUTTONS_ACTIVE_CH8        (BUTTONS_ACTIVE_STATE_HIGH)
+
+#define BUTTONS_CH9_EN            (ON)// toggle SW11_1
+#define BUTTONS_GPIO_PORT_CH9     GPIOA
+#define BUTTONS_GPIO_PIN_CH9      (GPIO_Pin_7)
+#define BUTTONS_GPIO_PIN_MODE_CH9 (GPIO_Mode_IPD)
+#define BUTTONS_ACTIVE_CH9        (BUTTONS_ACTIVE_STATE_HIGH)
+
+#define BUTTONS_CH10_EN            (ON)// toggle SW11_2
+#define BUTTONS_GPIO_PORT_CH10     GPIOA
+#define BUTTONS_GPIO_PIN_CH10      (GPIO_Pin_8)
+#define BUTTONS_GPIO_PIN_MODE_CH10 (GPIO_Mode_IPD)
+#define BUTTONS_ACTIVE_CH10        (BUTTONS_ACTIVE_STATE_HIGH)
 
 /******************************************************************************
  * PUBLIC TYPES
