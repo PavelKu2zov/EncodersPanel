@@ -6,7 +6,8 @@
         "stdbool.h": "c",
         "general_types.h": "c",
         "general_macros.h": "c",
-        "stm32f10x_gpio.h": "c"
+        "stm32f10x_gpio.h": "c",
+        "buttons_drv.h": "c"
     }
 
 
