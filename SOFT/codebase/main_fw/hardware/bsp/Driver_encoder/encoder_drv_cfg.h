@@ -31,7 +31,7 @@ extern "C" {
 #define ENCODER_QTY_CH (5U)
  
  // Specify GPIO pin channel 0
-#define ENCODER_CH0_EN                             (ON)// Encoder #7
+#define ENCODER_CH0_EN                             (ON)// Encoder #SW7
 #define ENCODER_GPIO_PORT_PIN0_CH0                 GPIOB
 #define ENCODER_GPIO_PORT_PIN1_CH0                 GPIOB
 #define ENCODER_GPIO_PIN_0_CH0                     (GPIO_Pin_7)
@@ -41,7 +41,7 @@ extern "C" {
 #define ENCODER_BIT_RESULT_POS_CH0                 (6U) 
 
 // Specify GPIO pin channel 1
-#define ENCODER_CH1_EN                             (ON)// Encoder #9
+#define ENCODER_CH1_EN                             (ON)// Encoder #SW9
 #define ENCODER_GPIO_PORT_PIN0_CH1                 GPIOB
 #define ENCODER_GPIO_PORT_PIN1_CH1                 GPIOB
 #define ENCODER_GPIO_PIN_0_CH1                     (GPIO_Pin_0)
@@ -51,7 +51,7 @@ extern "C" {
 #define ENCODER_BIT_RESULT_POS_CH1                 (0U) 
 
 // Specify GPIO pin channel 2
-#define ENCODER_CH2_EN                             (ON)// Encoder #10
+#define ENCODER_CH2_EN                             (ON)// Encoder #SW10
 #define ENCODER_GPIO_PORT_PIN0_CH2                 GPIOB
 #define ENCODER_GPIO_PORT_PIN1_CH2                 GPIOB
 #define ENCODER_GPIO_PIN_0_CH2                     (GPIO_Pin_5)
@@ -61,7 +61,7 @@ extern "C" {
 #define ENCODER_BIT_RESULT_POS_CH2                 (4U) 
 
 // Specify GPIO pin channel 3
-#define ENCODER_CH3_EN                             (ON)// Encoder #12
+#define ENCODER_CH3_EN                             (ON)// Encoder #SW12
 #define ENCODER_GPIO_PORT_PIN0_CH3                 GPIOB
 #define ENCODER_GPIO_PORT_PIN1_CH3                 GPIOB
 #define ENCODER_GPIO_PIN_0_CH3                     (GPIO_Pin_8)

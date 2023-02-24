@@ -42,7 +42,7 @@ extern "C" {
  // Encoder direction rotation type
 typedef enum
 {
-    ENCODER_DIR_ROTATION_RIGHT,             // Encoder rotation right
+    ENCODER_DIR_ROTATION_RIGHT = 0,             // Encoder rotation right
     ENCODER_DIR_ROTATION_LEFT,              // Encoder rotation left
     ENCODER_DIR_ROTATION_NONE               // Encoder not rotation
 } encoder_dir_rotation_t;

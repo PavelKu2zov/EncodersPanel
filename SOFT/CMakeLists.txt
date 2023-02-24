@@ -35,6 +35,7 @@ file(GLOB_RECURSE HARDWARE_SOURCES
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/bsp.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_encoder/*.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_buttons/*.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_control/*.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/*.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/system_stm32f10x.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/CMSIS/CM3/CoreSupport/*.c"
@@ -65,6 +66,7 @@ include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/application)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_encoder)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_buttons)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_control)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/system)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/CMSIS/CM3/CoreSupport)
