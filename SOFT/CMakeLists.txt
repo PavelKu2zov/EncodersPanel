@@ -32,8 +32,10 @@ add_definitions(
 #set(FREERTOS_DIR FreeRTOS/Source/)
 
 file(GLOB_RECURSE HARDWARE_SOURCES 
-        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Init.c"
-        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_mcp23017/*.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/bsp.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_encoder/*.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_buttons/*.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_control/*.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/*.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/system_stm32f10x.c"
         "${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/CMSIS/CM3/CoreSupport/*.c"
@@ -41,6 +43,7 @@ file(GLOB_RECURSE HARDWARE_SOURCES
 
 file(GLOB_RECURSE APPL_SOURCES 
         "${CMAKE_SOURCE_DIR}/codebase/main_fw//application/main.c"
+        "${CMAKE_SOURCE_DIR}/codebase/main_fw//application/app.c"
 )
 
 #[[
@@ -61,8 +64,11 @@ file(
 ]]
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/application)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp)
-include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_mcp23017)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_encoder)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_buttons)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/bsp/Driver_control)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal)
+include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/system)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/CMSIS/CM3/CoreSupport)
 include_directories(${CMAKE_SOURCE_DIR}/codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/inc)
 
