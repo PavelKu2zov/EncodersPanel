@@ -197,7 +197,7 @@ void encoder_calculate_rotations(void)
  * @param[in] nChannel: channel number
  * @param[out] stStateCh: encoder status
  */
-void encoder_get_channel_value(const uint8_t nChannel, encoder_state_t * const stStateCh)
+ encoder_get_channel_value(const uint8_t nChannel, encoder_state_t * const stStateCh)
 {
     if (ON == encoder_aParameters[nChannel].nChannelEn)
     {

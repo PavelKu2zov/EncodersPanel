@@ -23,6 +23,7 @@
 #include "bsp.h"
 #include "encoder_drv.h"
 #include "buttons_drv.h"
+#include "control_drv.h"
 
 /******************************************************************************
  * DEFINES
@@ -40,7 +41,7 @@ static buttons_state_t buttons_state[BUTTONS_QTY];
 /******************************************************************************
  * PUBLIC DATA
  ******************************************************************************/
-uint8_t bufferUartTx[DEVICE_SIZE_BUF_USART2];
+
 /******************************************************************************
  * EXTERNAL DATA
  ******************************************************************************/
@@ -74,16 +75,8 @@ void app_entry_point(void)
     buttons_init();
     for (;;)
     {
-        encoder_get_channel_value(ENCODER_CH_0, &encoder_states[ENCODER_CH_0]);
-        encoder_get_channel_value(ENCODER_CH_1, &encoder_states[ENCODER_CH_1]);
-        encoder_get_channel_value(ENCODER_CH_2, &encoder_states[ENCODER_CH_2]);
-        encoder_get_channel_value(ENCODER_CH_3, &encoder_states[ENCODER_CH_3]);
-
-        for (uint8_t i = 0; i < BUTTONS_QTY; i++)
-        {
-            buttons_state[i] = buttons_get_value(i);
-        }
-        Delay(250);
+        control_poll();
+        // Delay(250);
     }
 }
 

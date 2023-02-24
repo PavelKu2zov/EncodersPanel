@@ -1,5 +1,6 @@
 #include "stm32f10x.h"
 #include "bsp.h"
+#include "control_drv.h"
 
 extern uint8_t bufferUartTx[];
 
@@ -11,10 +12,10 @@ void bsp_init()
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE); // 72 MHz clock
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); // 36 MHz clock
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); // 36 MHz clock
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
-    /********************************��������� GPIO *********************/
+    /******************************** GPIO *********************/
     GPIO_InitTypeDef GPIO_InitStruct;
     GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_10; // Test pin
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
@@ -22,7 +23,7 @@ void bsp_init()
     GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // Uart tx
-    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_2;
+    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_9;
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_AF_PP;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -50,14 +51,14 @@ void bsp_init()
     TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
     TIM_Cmd(TIM3, ENABLE);
 
-    /********************************��������� DMA*****************************/
-    DMA_DeInit(DMA1_Channel7); // USART2_TX
+    /********************************DMA*****************************/
+    DMA_DeInit(DMA1_Channel4); // USART1_TX
 
     DMA_InitTypeDef DMA_InitStruct;
-    DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)&USART2->DR;
+    DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)&USART1->DR;
     DMA_InitStruct.DMA_MemoryBaseAddr     = (uint32_t)&bufferUartTx;
     DMA_InitStruct.DMA_DIR                = DMA_DIR_PeripheralDST;
-    DMA_InitStruct.DMA_BufferSize         = DEVICE_SIZE_BUF_USART2;
+    DMA_InitStruct.DMA_BufferSize         = 0;
     DMA_InitStruct.DMA_PeripheralInc      = DMA_PeripheralInc_Disable;
     DMA_InitStruct.DMA_MemoryInc          = DMA_MemoryInc_Enable;
     DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -66,9 +67,9 @@ void bsp_init()
     DMA_InitStruct.DMA_Priority           = DMA_Priority_Low;
     DMA_InitStruct.DMA_M2M                = DMA_M2M_Disable;
 
-    DMA_Init(DMA1_Channel7, &DMA_InitStruct);
-    DMA_Cmd(DMA1_Channel7, DISABLE);
-    /********************************��������� Usart2***************************/
+    DMA_Init(DMA1_Channel4, &DMA_InitStruct);
+    DMA_Cmd(DMA1_Channel4, DISABLE);
+    /********************************Usart1***************************/
     USART_InitTypeDef USART_InitStruct;
     USART_InitStruct.USART_BaudRate            = 31250;
     USART_InitStruct.USART_WordLength          = USART_WordLength_8b;
@@ -76,12 +77,12 @@ void bsp_init()
     USART_InitStruct.USART_Parity              = USART_Parity_No;
     USART_InitStruct.USART_Mode                = USART_Mode_Tx;
     USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_Init(USART2, &USART_InitStruct);
+    USART_Init(USART1, &USART_InitStruct);
 
-    USART_DMACmd(USART2, USART_DMAReq_Tx, ENABLE);
+    USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
 
     /* Enable USART2 */
-    USART_Cmd(USART2, ENABLE);
+    USART_Cmd(USART1, ENABLE);
     /********************************��������� NVIC******************************/
 
     NVIC_EnableIRQ(TIM3_IRQn);
