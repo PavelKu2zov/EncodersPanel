@@ -196,56 +196,36 @@ void encoder_calculate_rotations(void)
  * @brief Get channel value
  * @param[in] nChannel: channel number
  * @param[out] stStateCh: encoder status
+ * @return number of impulses,
+ *          value < 0 -> rotation left
+ *          value > 0 -> rotation right
+ *          value == 0 -> not rotation
  */
-void encoder_get_channel_value(const uint8_t nChannel, encoder_state_t * const stStateCh)
+int32_t encoder_get_channel_value(const uint8_t nChannel)
 {
+    int32_t n_num_impulses = 0;
+
     if (ON == encoder_aParameters[nChannel].nChannelEn)
     {
-        if (encoder_aParameters[nChannel].nCounterImpulsesRight > encoder_aParameters[nChannel].nCounterImpulsesLeft)
+        n_num_impulses = (int32_t)encoder_aParameters[nChannel].nCounterImpulsesRight - (int32_t)encoder_aParameters[nChannel].nCounterImpulsesLeft;
+
+        if ((ENCODER_CH_1 == nChannel) || (ENCODER_CH_2 == nChannel))
         {
-            stStateCh->n_counter_impulses = (encoder_aParameters[nChannel].nCounterImpulsesRight - encoder_aParameters[nChannel].nCounterImpulsesLeft);
-
-            if (ENCODER_CH_1 == nChannel)
+            if (((n_num_impulses % 4U) == 0) && (n_num_impulses != 0))
             {
-                if (((stStateCh->n_counter_impulses % 4U) == 0) && (stStateCh->n_counter_impulses != 0))
-                {
-                    stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
-
-                    encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
-                    encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
-                }
-                else
-                {
-                    stStateCh->enDirection = ENCODER_DIR_ROTATION_NONE;
-                }
-            }
-            else
-            {
-                stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
-
                 encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
                 encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
             }
         }
-        else if (encoder_aParameters[nChannel].nCounterImpulsesRight < encoder_aParameters[nChannel].nCounterImpulsesLeft)
+        else
         {
-            stStateCh->n_counter_impulses = (encoder_aParameters[nChannel].nCounterImpulsesLeft - encoder_aParameters[nChannel].nCounterImpulsesRight);
-
-            stStateCh->enDirection = ENCODER_DIR_ROTATION_LEFT;
-
             encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
             encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
         }
-        else
-        {
-            stStateCh->enDirection = ENCODER_DIR_ROTATION_NONE;
-        }
     }
-    else
-    {
-        DoNothing();
-    }
-} // end of ENCODER_GetChannelValue()
+
+    return n_num_impulses;
+}
 
 /******************************************************************************
  * END OF SOURCE'S CODE
