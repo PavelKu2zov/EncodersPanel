@@ -197,7 +197,7 @@ void encoder_calculate_rotations(void)
  * @param[in] nChannel: channel number
  * @param[out] stStateCh: encoder status
  */
- encoder_get_channel_value(const uint8_t nChannel, encoder_state_t * const stStateCh)
+encoder_get_channel_value(const uint8_t nChannel, encoder_state_t * const stStateCh)
 {
     if (ON == encoder_aParameters[nChannel].nChannelEn)
     {
@@ -205,7 +205,21 @@ void encoder_calculate_rotations(void)
         {
             stStateCh->n_counter_impulses = (encoder_aParameters[nChannel].nCounterImpulsesRight - encoder_aParameters[nChannel].nCounterImpulsesLeft);
 
-            stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
+            if (ENCODER_CH_1 == nChannel)
+            {
+                if (((stStateCh->n_counter_impulses % 4) == 0) && (stStateCh->n_counter_impulses != 0))
+                {
+                    stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
+                }
+                else
+                {
+                    stStateCh->enDirection = ENCODER_DIR_ROTATION_NONE;
+                }
+            }
+            else
+            {
+                stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
+            }
         }
         else if (encoder_aParameters[nChannel].nCounterImpulsesRight < encoder_aParameters[nChannel].nCounterImpulsesLeft)
         {
