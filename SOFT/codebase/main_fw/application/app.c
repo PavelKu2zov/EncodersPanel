@@ -118,13 +118,19 @@ void HardFault_Handler(void)
 
     while (true)
     {
-        for(uint16_t i = 0; i < strlen(msg); i++)
+        USART_SendData(USART1, 0xf0);
+        while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+            ;
+        for (uint16_t i = 0; i < strlen(msg); i++)
         {
             USART_SendData(USART1, msg[i]);
-            while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+            while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+                ;
         }
+        USART_SendData(USART1, 0xf7);
 
-        for (uint32_t i = 0; i < 0xfffff; i++);
+        for (uint32_t i = 0; i < 0xfffff; i++)
+            ;
     }
 }
 
