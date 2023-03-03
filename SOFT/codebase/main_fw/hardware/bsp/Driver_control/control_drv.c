@@ -548,7 +548,7 @@ static STD_RESULT update_sw12_input_prm(void)
     toggle_pos_t    toggle_pos;
 
     encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW12_CH);
-    buttons_state = buttons_get_value(CONTROL_BUTTON_SW12_1_CH);
+    buttons_state    = buttons_get_value(CONTROL_BUTTON_SW12_1_CH);
 
     if ((last_buttons_state_sw12_1 != buttons_state) && (TRIG_SCHMITT < n_cnt_trig_schmitt_sw12_1))
     {
@@ -611,10 +611,18 @@ static STD_RESULT update_sw12_input_prm(void)
  */
 static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size)
 {
+#if 0
     DMA_Cmd(DMA1_Channel4, DISABLE);
     DMA_ClearFlag(DMA1_FLAG_TC4);
     DMA_SetCurrDataCounter(DMA1_Channel4, size);
     DMA_Cmd(DMA1_Channel4, ENABLE);
+#endif
+    for (uint16_t i = 0; i < size; i++)
+    {
+        USART_SendData(USART1, pucbufferUartTx[i]);
+        while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+            ;
+    }
 }
 
 /******************************************************************************

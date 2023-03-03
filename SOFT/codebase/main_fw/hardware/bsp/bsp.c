@@ -79,8 +79,9 @@ void bsp_init()
     USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_Init(USART1, &USART_InitStruct);
 
+#if 0
     USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
-
+#endif
     /* Enable USART2 */
     USART_Cmd(USART1, ENABLE);
     /********************************��������� NVIC******************************/
