@@ -207,6 +207,7 @@ int32_t encoder_get_channel_value(const uint8_t nChannel)
 
     if (ON == encoder_aParameters[nChannel].nChannelEn)
     {
+        __disable_irq();
         n_num_impulses = (int32_t)encoder_aParameters[nChannel].nCounterImpulsesRight - (int32_t)encoder_aParameters[nChannel].nCounterImpulsesLeft;
 
         if ((ENCODER_CH_1 == nChannel) || (ENCODER_CH_2 == nChannel))
@@ -227,6 +228,7 @@ int32_t encoder_get_channel_value(const uint8_t nChannel)
             encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
             encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
         }
+        __enable_irq();
     }
 
     return n_num_impulses;
