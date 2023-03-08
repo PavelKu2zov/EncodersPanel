@@ -459,11 +459,6 @@ static STD_RESULT update_sw9_input_prm(void)
 
     encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW9_CH);
 
-        table_t value;
-        value = a_sw10_fsm_table[sw10_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
-        USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
-
     if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
         sw9_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
@@ -691,12 +686,13 @@ void control_poll(void)
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
-
-    if (RESULT_OK == update_sw9_input_prm())
+    extern test_flag;
+    if (test_flag)//(RESULT_OK == update_sw9_input_prm())
     {
         value = a_sw9_fsm_table[sw9_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
+        test_flag = 0;
     }
 
     if (RESULT_OK == update_sw10_input_prm())
