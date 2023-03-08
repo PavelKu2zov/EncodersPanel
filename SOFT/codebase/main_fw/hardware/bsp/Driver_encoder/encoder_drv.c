@@ -183,10 +183,18 @@ void encoder_calculate_rotations(void)
                 {
                     encoder_aParameters[nChNumber].nCounterImpulsesRight++;
                 }
+                else if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
+                }
             }
             else if (ENCODER_CH_2 == nChNumber)
             {
-                if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                if ((fwd & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesRight++;
+                }
+                else if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
                 {
                     encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
                 }
