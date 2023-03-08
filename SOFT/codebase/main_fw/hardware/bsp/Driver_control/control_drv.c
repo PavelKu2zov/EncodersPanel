@@ -688,7 +688,11 @@ void control_poll(void)
 
     if (RESULT_OK == update_sw9_input_prm())
     {
-        value = a_sw9_fsm_table[sw9_input_prm.R];
+        // value = a_sw9_fsm_table[sw9_input_prm.R];
+        // create_midi_frame(value.prm.cc, value.prm.data);
+        // USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
+
+        value = a_sw10_fsm_table[sw10_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
