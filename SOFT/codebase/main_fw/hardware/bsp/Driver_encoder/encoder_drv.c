@@ -215,6 +215,11 @@ int32_t encoder_get_channel_value(const uint8_t nChannel)
             {
                 encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
                 encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
+                n_num_impulses = n_num_impulses / 4U;
+            }
+            else
+            {
+                n_num_impulses = 0U;
             }
         }
         else
