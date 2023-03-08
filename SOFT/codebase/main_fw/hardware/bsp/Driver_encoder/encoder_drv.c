@@ -176,11 +176,26 @@ void encoder_calculate_rotations(void)
     {
         if (ON == encoder_aParameters[nChNumber].nChannelEn)
         {
-            if (fwd & (1U << encoder_aParameters[nChNumber].n_bit_pos_result))
+            uint16_t n_pos = 1U << encoder_aParameters[nChNumber].n_bit_pos_result;
+            if (ENCODER_CH_1 == nChNumber)
+            {
+                if ((fwd & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesRight++;
+                }
+            }
+            else if (ENCODER_CH_2 == nChNumber)
+            {
+                if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
+                }
+            }
+            else if (fwd & n_pos)
             {
                 encoder_aParameters[nChNumber].nCounterImpulsesRight++;
             }
-            else if (back & (1U << encoder_aParameters[nChNumber].n_bit_pos_result))
+            else if (back & n_pos)
             {
                 encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
             }
@@ -209,25 +224,10 @@ int32_t encoder_get_channel_value(const uint8_t nChannel)
     {
         __disable_irq();
         n_num_impulses = (int32_t)encoder_aParameters[nChannel].nCounterImpulsesRight - (int32_t)encoder_aParameters[nChannel].nCounterImpulsesLeft;
+        
+        encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
+        encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
 
-        if ((ENCODER_CH_1 == nChannel) || (ENCODER_CH_2 == nChannel))
-        {
-            if (((n_num_impulses % 4U) == 0) && (n_num_impulses != 0))
-            {
-                encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
-                encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
-                n_num_impulses = n_num_impulses / 4U;
-            }
-            else
-            {
-                n_num_impulses = 0U;
-            }
-        }
-        else
-        {
-            encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
-            encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
-        }
         __enable_irq();
     }
 

@@ -237,6 +237,7 @@ static STD_RESULT get_toggle_sw11_pos(toggle_pos_t * toggle_pos);
 static STD_RESULT get_toggle_sw8_pos(toggle_pos_t * toggle_pos);
 
 static toggle_pos_t get_toggle_two_pos(void);
+static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size);
 
 /******************************************************************************
  * PRIVATE FUNCTIONS
@@ -688,11 +689,7 @@ void control_poll(void)
 
     if (RESULT_OK == update_sw9_input_prm())
     {
-        // value = a_sw9_fsm_table[sw9_input_prm.R];
-        // create_midi_frame(value.prm.cc, value.prm.data);
-        // USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
-
-        value = a_sw10_fsm_table[sw10_input_prm.R];
+        value = a_sw9_fsm_table[sw9_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
