@@ -461,6 +461,11 @@ static STD_RESULT update_sw9_input_prm(void)
 
     if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
+        table_t value;
+        value = a_sw10_fsm_table[sw10_input_prm.R];
+        create_midi_frame(value.prm.cc, value.prm.data);
+        USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
+        
         sw9_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
 
         if (RESULT_OK == get_toggle_sw11_pos(&toggle_pos))
