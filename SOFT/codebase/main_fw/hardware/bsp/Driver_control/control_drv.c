@@ -686,13 +686,12 @@ void control_poll(void)
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
-    extern test_flag;
-    if (test_flag)//(RESULT_OK == update_sw9_input_prm())
+    
+    if (RESULT_OK == update_sw9_input_prm())
     {
         value = a_sw9_fsm_table[sw9_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
-        test_flag = 0;
     }
 
     if (RESULT_OK == update_sw10_input_prm())

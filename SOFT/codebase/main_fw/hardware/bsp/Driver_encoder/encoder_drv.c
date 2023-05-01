@@ -69,7 +69,7 @@ static uint16_t n_last_state_line_B;
 /******************************************************************************
  * PUBLIC DATA
  ******************************************************************************/
-uint8_t test_flag = 0;
+
 /******************************************************************************
  * EXTERNAL DATA
  ******************************************************************************/
@@ -182,9 +182,6 @@ void encoder_calculate_rotations(void)
                 if ((fwd & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
                 {
                     encoder_aParameters[nChNumber].nCounterImpulsesRight++;
-
-                    test_flag = 1;
-
                 }
                 else if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
                 {
