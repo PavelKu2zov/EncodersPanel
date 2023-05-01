@@ -176,11 +176,34 @@ void encoder_calculate_rotations(void)
     {
         if (ON == encoder_aParameters[nChNumber].nChannelEn)
         {
-            if (fwd & (1U << encoder_aParameters[nChNumber].n_bit_pos_result))
+            uint16_t n_pos = 1U << encoder_aParameters[nChNumber].n_bit_pos_result;
+            if (ENCODER_CH_1 == nChNumber)
+            {
+                if ((fwd & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesRight++;
+                }
+                else if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
+                }
+            }
+            else if (ENCODER_CH_2 == nChNumber)
+            {
+                if ((fwd & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesRight++;
+                }
+                else if ((back & n_pos) && ((n_current_state_line_A & n_pos) == n_pos) && ((n_current_state_line_B & n_pos) == n_pos))
+                {
+                    encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
+                }
+            }
+            else if (fwd & n_pos)
             {
                 encoder_aParameters[nChNumber].nCounterImpulsesRight++;
             }
-            else if (back & (1U << encoder_aParameters[nChNumber].n_bit_pos_result))
+            else if (back & n_pos)
             {
                 encoder_aParameters[nChNumber].nCounterImpulsesLeft++;
             }
@@ -196,49 +219,28 @@ void encoder_calculate_rotations(void)
  * @brief Get channel value
  * @param[in] nChannel: channel number
  * @param[out] stStateCh: encoder status
+ * @return number of impulses,
+ *          value < 0 -> rotation left
+ *          value > 0 -> rotation right
+ *          value == 0 -> not rotation
  */
-encoder_get_channel_value(const uint8_t nChannel, encoder_state_t * const stStateCh)
+int32_t encoder_get_channel_value(const uint8_t nChannel)
 {
+    int32_t n_num_impulses = 0;
+
     if (ON == encoder_aParameters[nChannel].nChannelEn)
     {
-        if (encoder_aParameters[nChannel].nCounterImpulsesRight > encoder_aParameters[nChannel].nCounterImpulsesLeft)
-        {
-            stStateCh->n_counter_impulses = (encoder_aParameters[nChannel].nCounterImpulsesRight - encoder_aParameters[nChannel].nCounterImpulsesLeft);
-
-            if (ENCODER_CH_1 == nChannel)
-            {
-                if (((stStateCh->n_counter_impulses % 4) == 0) && (stStateCh->n_counter_impulses != 0))
-                {
-                    stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
-                }
-                else
-                {
-                    stStateCh->enDirection = ENCODER_DIR_ROTATION_NONE;
-                }
-            }
-            else
-            {
-                stStateCh->enDirection = ENCODER_DIR_ROTATION_RIGHT;
-            }
-        }
-        else if (encoder_aParameters[nChannel].nCounterImpulsesRight < encoder_aParameters[nChannel].nCounterImpulsesLeft)
-        {
-            stStateCh->n_counter_impulses = (encoder_aParameters[nChannel].nCounterImpulsesLeft - encoder_aParameters[nChannel].nCounterImpulsesRight);
-
-            stStateCh->enDirection = ENCODER_DIR_ROTATION_LEFT;
-        }
-        else
-        {
-            stStateCh->enDirection = ENCODER_DIR_ROTATION_NONE;
-        }
+        __disable_irq();
+        n_num_impulses = (int32_t)encoder_aParameters[nChannel].nCounterImpulsesRight - (int32_t)encoder_aParameters[nChannel].nCounterImpulsesLeft;
+        
         encoder_aParameters[nChannel].nCounterImpulsesRight = 0U;
         encoder_aParameters[nChannel].nCounterImpulsesLeft  = 0U;
+
+        __enable_irq();
     }
-    else
-    {
-        DoNothing();
-    }
-} // end of ENCODER_GetChannelValue()
+
+    return n_num_impulses;
+}
 
 /******************************************************************************
  * END OF SOURCE'S CODE

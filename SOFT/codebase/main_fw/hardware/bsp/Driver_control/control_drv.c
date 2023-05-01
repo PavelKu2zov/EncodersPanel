@@ -99,7 +99,6 @@ typedef union
  * PRIVATE DATA
  ******************************************************************************/
 
-static encoder_state_t encoder_states[ENCODER_QTY_CH];
 static buttons_state_t buttons_state[BUTTONS_QTY];
 static sw1_input_prm_t sw1_input_prm;
 static sw1_input_prm_t sw2_input_prm;
@@ -238,6 +237,7 @@ static STD_RESULT get_toggle_sw11_pos(toggle_pos_t * toggle_pos);
 static STD_RESULT get_toggle_sw8_pos(toggle_pos_t * toggle_pos);
 
 static toggle_pos_t get_toggle_two_pos(void);
+static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size);
 
 /******************************************************************************
  * PRIVATE FUNCTIONS
@@ -382,11 +382,11 @@ static STD_RESULT update_sw_buttons_input_prm(uint8_t sw_but_ch, sw1_input_prm_t
 static STD_RESULT update_sw7_input_prm(void)
 {
     STD_RESULT      result = RESULT_NOT_OK;
-    encoder_state_t encoder_state;
+    int32_t         encoder_impulses;
     buttons_state_t buttons_state;
     toggle_pos_t    toggle_pos;
 
-    encoder_get_channel_value(CONTROL_ENCODER_SW7_CH, &encoder_state);
+    encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW7_CH);
 
     buttons_state = buttons_get_value(CONTROL_BUTTON_SW7_1_CH);
 
@@ -407,9 +407,9 @@ static STD_RESULT update_sw7_input_prm(void)
         }
     }
 
-    if (ENCODER_DIR_ROTATION_NONE != encoder_state.enDirection)
+    if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
-        sw7_input_prm.B.dir_rotation = encoder_state.enDirection;
+        sw7_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
 
         if (BUTTONS_ER != buttons_state)
         {
@@ -451,17 +451,17 @@ static STD_RESULT update_sw7_input_prm(void)
  */
 static STD_RESULT update_sw9_input_prm(void)
 {
-    STD_RESULT      result = RESULT_NOT_OK;
-    encoder_state_t encoder_state;
-    toggle_pos_t    toggle_pos;
+    STD_RESULT   result = RESULT_NOT_OK;
+    int32_t      encoder_impulses;
+    toggle_pos_t toggle_pos;
 
     sw9_input_prm.R = 0;
 
-    encoder_get_channel_value(CONTROL_ENCODER_SW9_CH, &encoder_state);
+    encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW9_CH);
 
-    if (ENCODER_DIR_ROTATION_NONE != encoder_state.enDirection)
+    if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
-        sw9_input_prm.B.dir_rotation = encoder_state.enDirection;
+        sw9_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
 
         if (RESULT_OK == get_toggle_sw11_pos(&toggle_pos))
         {
@@ -497,17 +497,17 @@ static STD_RESULT update_sw9_input_prm(void)
  */
 static STD_RESULT update_sw10_input_prm(void)
 {
-    STD_RESULT      result = RESULT_NOT_OK;
-    encoder_state_t encoder_state;
-    toggle_pos_t    toggle_pos;
+    STD_RESULT   result = RESULT_NOT_OK;
+    int32_t      encoder_impulses;
+    toggle_pos_t toggle_pos;
 
     sw10_input_prm.R = 0;
 
-    encoder_get_channel_value(CONTROL_ENCODER_SW10_CH, &encoder_state);
+    encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW10_CH);
 
-    if (ENCODER_DIR_ROTATION_NONE != encoder_state.enDirection)
+    if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
-        sw10_input_prm.B.dir_rotation = encoder_state.enDirection;
+        sw10_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
 
         if (RESULT_OK == get_toggle_sw11_pos(&toggle_pos))
         {
@@ -544,12 +544,12 @@ static STD_RESULT update_sw10_input_prm(void)
 static STD_RESULT update_sw12_input_prm(void)
 {
     STD_RESULT      result = RESULT_NOT_OK;
-    encoder_state_t encoder_state;
+    int32_t         encoder_impulses;
     buttons_state_t buttons_state;
     toggle_pos_t    toggle_pos;
 
-    encoder_get_channel_value(CONTROL_ENCODER_SW12_CH, &encoder_state);
-    buttons_state = buttons_get_value(CONTROL_BUTTON_SW12_1_CH);
+    encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW12_CH);
+    buttons_state    = buttons_get_value(CONTROL_BUTTON_SW12_1_CH);
 
     if ((last_buttons_state_sw12_1 != buttons_state) && (TRIG_SCHMITT < n_cnt_trig_schmitt_sw12_1))
     {
@@ -565,9 +565,9 @@ static STD_RESULT update_sw12_input_prm(void)
         n_cnt_trig_schmitt_sw12_1++;
     }
 
-    if (ENCODER_DIR_ROTATION_NONE != encoder_state.enDirection)
+    if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
-        sw12_input_prm.B.dir_rotation = encoder_state.enDirection;
+        sw12_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
 
         if (BUTTONS_ER != buttons_state)
         {
@@ -612,10 +612,18 @@ static STD_RESULT update_sw12_input_prm(void)
  */
 static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size)
 {
+#if 0
     DMA_Cmd(DMA1_Channel4, DISABLE);
     DMA_ClearFlag(DMA1_FLAG_TC4);
     DMA_SetCurrDataCounter(DMA1_Channel4, size);
     DMA_Cmd(DMA1_Channel4, ENABLE);
+#endif
+    for (uint16_t i = 0; i < size; i++)
+    {
+        USART_SendData(USART1, pucbufferUartTx[i]);
+        while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+            ;
+    }
 }
 
 /******************************************************************************
@@ -678,7 +686,7 @@ void control_poll(void)
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
-
+    
     if (RESULT_OK == update_sw9_input_prm())
     {
         value = a_sw9_fsm_table[sw9_input_prm.R];
