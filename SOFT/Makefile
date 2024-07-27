@@ -14,7 +14,7 @@
 # * VARIABLES
 # ******************************************************************************
 
-BUILD_DIR = artifacts\build
+BUILD_DIR = artifacts/build
 TARGET = encoder_panel
 
 DEBUG = 1			# debug build?
@@ -63,7 +63,7 @@ PREFIX = arm-none-eabi-
 
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
-GCC_PATH=D:\soft\gcc-arm-none-eabi-10-2020-q4-major\bin
+# GCC_PATH=D:\soft\gcc-arm-none-eabi-10-2020-q4-major\bin
 
 ifdef GCC_PATH
 	CC = $(GCC_PATH)/$(PREFIX)gcc
@@ -111,6 +111,9 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 # * TARGETS - MANDATORY
 # ******************************************************************************
 
+$(BUILD_DIR)/$(TARGET).bin: $(BUILD_DIR)/$(TARGET).elf | $(BUILD_DIR)
+	$(BIN) $< $@
+
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 	$(SZ) $@
@@ -120,7 +123,6 @@ $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	$(AS) -c $(CFLAGS) $< -o $@
-
 
 # Init repository / project
 init:
@@ -210,17 +212,17 @@ all_release:
 # 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
 # 	$(SZ) $@
 
-$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
+# $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+# 	$(HEX) $< $@
 	
-$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
+# $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+# 	$(BIN) $< $@	
 	
 $(BUILD_DIR):
-	mkdir $@	
+	mkdir $@
 
 clean:
-	-rd /s /q $(BUILD_DIR)
+	-rm -r $(BUILD_DIR)
 
 # ******************************************************************************
 # * END OF MAKEFILE
