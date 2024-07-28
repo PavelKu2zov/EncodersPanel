@@ -34,6 +34,7 @@ C_SOURCES =  \
 	codebase/main_fw/hardware/bsp/Driver_encoder/encoder_drv.c \
 	codebase/main_fw/hardware/bsp/Driver_buttons/buttons_drv.c \
 	codebase/main_fw/hardware/bsp/Driver_control/control_drv.c \
+	codebase/main_fw/hardware/bsp/Driver_control/control_data.c \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/misc.c \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_dma.c \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.c \
@@ -42,7 +43,8 @@ C_SOURCES =  \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c \
 	codebase/main_fw/hardware/mcu_hal/system_stm32f10x.c \
-	codebase/main_fw/middleware/Circular_Buffer/Latest/circ_buffer.c
+	codebase/main_fw/middleware/Circular_Buffer/Latest/circ_buffer.c \
+	codebase/main_fw/middleware/Common/scr/crc.c
 
 C_INCLUDES =  \
 	-Icodebase/main_fw/application \
@@ -54,7 +56,8 @@ C_INCLUDES =  \
 	-Icodebase/main_fw/hardware/system \
 	-Icodebase/main_fw/hardware/CMSIS/CM3/CoreSupport \
 	-Icodebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/inc \
-	-Icodebase/main_fw/middleware/Circular_Buffer/Latest
+	-Icodebase/main_fw/middleware/Circular_Buffer/Latest \
+	-Icodebase/main_fw/middleware/Common/inc
 
 
 # ASM sources

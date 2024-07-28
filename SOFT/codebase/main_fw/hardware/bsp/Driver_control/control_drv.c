@@ -24,20 +24,26 @@
 #include "encoder_drv.h"
 #include "buttons_drv.h"
 #include "stm32f10x.h"
+#include "crc.h"
+
 
 /******************************************************************************
  * DEFINES
  ******************************************************************************/
 #define MIDI_MARKER             (0xb4)
 #define MIDI_SIZE_FRAME         (0x03)
-#define SW7_SIZE_FSM_TABLE      (24U)
-#define SW9_SIZE_FSM_TABLE      (12U)
-#define SW10_SIZE_FSM_TABLE     (12U)
-#define SW12_SIZE_FSM_TABLE     (24U)
-#define SW1_SIZE_FSM_TABLE      (6U)
 #define SIZE_BUF_USART2         (256)
 #define TRIG_SCHMITT            (3U)
 #define TRIG_SCHMITT_SW_BUTTONS (20U)
+
+#define CONTROL_ADR_STORE_CONFIG 			(0x08007C00UL)
+#define CONTROL_CFG_DATA_SIZE_BYTES         (SW7_SIZE_FSM_TABLE  + \
+											 SW9_SIZE_FSM_TABLE  + \
+											 SW10_SIZE_FSM_TABLE + \
+											 SW12_SIZE_FSM_TABLE + \
+											 (6U * SW1_SIZE_FSM_TABLE))
+
+
 
 /******************************************************************************
  * PRIVATE TYPES
@@ -85,15 +91,7 @@ typedef union
     uint8_t R;
 } sw1_input_prm_t;
 
-typedef union
-{
-    struct prm_str
-    {
-        uint8_t cc;
-        uint8_t data;
-    } prm;
-    uint16_t W;
-} table_t;
+
 
 /******************************************************************************
  * PRIVATE DATA
@@ -127,97 +125,23 @@ static uint8_t         n_cnt_trig_schmitt_sw4    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw5    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw6    = 0;
 
-static table_t a_sw7_fsm_table[SW7_SIZE_FSM_TABLE]
-    = {{CONTROL_ENCODER_SW7_VAR0_CC, CONTROL_ENCODER_SW7_VAR0_DATA},   {CONTROL_ENCODER_SW7_VAR1_CC, CONTROL_ENCODER_SW7_VAR1_DATA},   {CONTROL_ENCODER_SW7_VAR2_CC, CONTROL_ENCODER_SW7_VAR2_DATA},   {CONTROL_ENCODER_SW7_VAR3_CC, CONTROL_ENCODER_SW7_VAR3_DATA},
-       {CONTROL_ENCODER_SW7_VAR4_CC, CONTROL_ENCODER_SW7_VAR4_DATA},   {CONTROL_ENCODER_SW7_VAR5_CC, CONTROL_ENCODER_SW7_VAR5_DATA},   {CONTROL_ENCODER_SW7_VAR6_CC, CONTROL_ENCODER_SW7_VAR6_DATA},   {CONTROL_ENCODER_SW7_VAR7_CC, CONTROL_ENCODER_SW7_VAR7_DATA},
-       {CONTROL_ENCODER_SW7_VAR8_CC, CONTROL_ENCODER_SW7_VAR8_DATA},   {CONTROL_ENCODER_SW7_VAR9_CC, CONTROL_ENCODER_SW7_VAR9_DATA},   {CONTROL_ENCODER_SW7_VAR10_CC, CONTROL_ENCODER_SW7_VAR10_DATA}, {CONTROL_ENCODER_SW7_VAR11_CC, CONTROL_ENCODER_SW7_VAR11_DATA},
-       {CONTROL_ENCODER_SW7_VAR12_CC, CONTROL_ENCODER_SW7_VAR12_DATA}, {CONTROL_ENCODER_SW7_VAR13_CC, CONTROL_ENCODER_SW7_VAR13_DATA}, {CONTROL_ENCODER_SW7_VAR14_CC, CONTROL_ENCODER_SW7_VAR14_DATA}, {CONTROL_ENCODER_SW7_VAR15_CC, CONTROL_ENCODER_SW7_VAR15_DATA},
-       {CONTROL_ENCODER_SW7_VAR16_CC, CONTROL_ENCODER_SW7_VAR16_DATA}, {CONTROL_ENCODER_SW7_VAR17_CC, CONTROL_ENCODER_SW7_VAR17_DATA}, {CONTROL_ENCODER_SW7_VAR18_CC, CONTROL_ENCODER_SW7_VAR18_DATA}, {CONTROL_ENCODER_SW7_VAR19_CC, CONTROL_ENCODER_SW7_VAR19_DATA},
-       {CONTROL_ENCODER_SW7_VAR20_CC, CONTROL_ENCODER_SW7_VAR20_DATA}, {CONTROL_ENCODER_SW7_VAR21_CC, CONTROL_ENCODER_SW7_VAR21_DATA}, {CONTROL_ENCODER_SW7_VAR22_CC, CONTROL_ENCODER_SW7_VAR22_DATA}, {CONTROL_ENCODER_SW7_VAR23_CC, CONTROL_ENCODER_SW7_VAR23_DATA}};
+static control_cfg_t control_cfg;
 
-static table_t a_sw9_fsm_table[SW9_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW9_VAR0_CC, CONTROL_ENCODER_SW9_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR1_CC, CONTROL_ENCODER_SW9_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR2_CC, CONTROL_ENCODER_SW9_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR3_CC, CONTROL_ENCODER_SW9_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR4_CC, CONTROL_ENCODER_SW9_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR5_CC, CONTROL_ENCODER_SW9_VAR5_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR6_CC, CONTROL_ENCODER_SW9_VAR6_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR7_CC, CONTROL_ENCODER_SW9_VAR7_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR8_CC, CONTROL_ENCODER_SW9_VAR8_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR9_CC, CONTROL_ENCODER_SW9_VAR9_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR10_CC, CONTROL_ENCODER_SW9_VAR10_DATA},
-                                                      {CONTROL_ENCODER_SW9_VAR11_CC, CONTROL_ENCODER_SW9_VAR11_DATA}};
 
-static table_t a_sw10_fsm_table[SW10_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW10_VAR0_CC, CONTROL_ENCODER_SW10_VAR0_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR1_CC, CONTROL_ENCODER_SW10_VAR1_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR2_CC, CONTROL_ENCODER_SW10_VAR2_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR3_CC, CONTROL_ENCODER_SW10_VAR3_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR4_CC, CONTROL_ENCODER_SW10_VAR4_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR5_CC, CONTROL_ENCODER_SW10_VAR5_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR6_CC, CONTROL_ENCODER_SW10_VAR6_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR7_CC, CONTROL_ENCODER_SW10_VAR7_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR8_CC, CONTROL_ENCODER_SW10_VAR8_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR9_CC, CONTROL_ENCODER_SW10_VAR9_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR10_CC, CONTROL_ENCODER_SW10_VAR10_DATA},
-                                                        {CONTROL_ENCODER_SW10_VAR11_CC, CONTROL_ENCODER_SW10_VAR11_DATA}};
-
-static table_t a_sw12_fsm_table[SW12_SIZE_FSM_TABLE]
-    = {{CONTROL_ENCODER_SW12_VAR0_CC, CONTROL_ENCODER_SW12_VAR0_DATA},   {CONTROL_ENCODER_SW12_VAR1_CC, CONTROL_ENCODER_SW12_VAR1_DATA},   {CONTROL_ENCODER_SW12_VAR2_CC, CONTROL_ENCODER_SW12_VAR2_DATA},   {CONTROL_ENCODER_SW12_VAR3_CC, CONTROL_ENCODER_SW12_VAR3_DATA},
-       {CONTROL_ENCODER_SW12_VAR4_CC, CONTROL_ENCODER_SW12_VAR4_DATA},   {CONTROL_ENCODER_SW12_VAR5_CC, CONTROL_ENCODER_SW12_VAR5_DATA},   {CONTROL_ENCODER_SW12_VAR6_CC, CONTROL_ENCODER_SW12_VAR6_DATA},   {CONTROL_ENCODER_SW12_VAR7_CC, CONTROL_ENCODER_SW12_VAR7_DATA},
-       {CONTROL_ENCODER_SW12_VAR8_CC, CONTROL_ENCODER_SW12_VAR8_DATA},   {CONTROL_ENCODER_SW12_VAR9_CC, CONTROL_ENCODER_SW12_VAR9_DATA},   {CONTROL_ENCODER_SW12_VAR10_CC, CONTROL_ENCODER_SW12_VAR10_DATA}, {CONTROL_ENCODER_SW12_VAR11_CC, CONTROL_ENCODER_SW12_VAR11_DATA},
-       {CONTROL_ENCODER_SW12_VAR12_CC, CONTROL_ENCODER_SW12_VAR12_DATA}, {CONTROL_ENCODER_SW12_VAR13_CC, CONTROL_ENCODER_SW12_VAR13_DATA}, {CONTROL_ENCODER_SW12_VAR14_CC, CONTROL_ENCODER_SW12_VAR14_DATA}, {CONTROL_ENCODER_SW12_VAR15_CC, CONTROL_ENCODER_SW12_VAR15_DATA},
-       {CONTROL_ENCODER_SW12_VAR16_CC, CONTROL_ENCODER_SW12_VAR16_DATA}, {CONTROL_ENCODER_SW12_VAR17_CC, CONTROL_ENCODER_SW12_VAR17_DATA}, {CONTROL_ENCODER_SW12_VAR18_CC, CONTROL_ENCODER_SW12_VAR18_DATA}, {CONTROL_ENCODER_SW12_VAR19_CC, CONTROL_ENCODER_SW12_VAR19_DATA},
-       {CONTROL_ENCODER_SW12_VAR20_CC, CONTROL_ENCODER_SW12_VAR20_DATA}, {CONTROL_ENCODER_SW12_VAR21_CC, CONTROL_ENCODER_SW12_VAR21_DATA}, {CONTROL_ENCODER_SW12_VAR22_CC, CONTROL_ENCODER_SW12_VAR22_DATA}, {CONTROL_ENCODER_SW12_VAR23_CC, CONTROL_ENCODER_SW12_VAR23_DATA}};
-
-static table_t a_sw1_fsm_table[SW1_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW1_VAR0_CC, CONTROL_ENCODER_SW1_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW1_VAR1_CC, CONTROL_ENCODER_SW1_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW1_VAR2_CC, CONTROL_ENCODER_SW1_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW1_VAR3_CC, CONTROL_ENCODER_SW1_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW1_VAR4_CC, CONTROL_ENCODER_SW1_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW1_VAR5_CC, CONTROL_ENCODER_SW1_VAR5_DATA}};
-
-static table_t a_sw2_fsm_table[SW1_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW2_VAR0_CC, CONTROL_ENCODER_SW2_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW2_VAR1_CC, CONTROL_ENCODER_SW2_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW2_VAR2_CC, CONTROL_ENCODER_SW2_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW2_VAR3_CC, CONTROL_ENCODER_SW2_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW2_VAR4_CC, CONTROL_ENCODER_SW2_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW2_VAR5_CC, CONTROL_ENCODER_SW2_VAR5_DATA}};
-
-static table_t a_sw3_fsm_table[SW1_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW3_VAR0_CC, CONTROL_ENCODER_SW3_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW3_VAR1_CC, CONTROL_ENCODER_SW3_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW3_VAR2_CC, CONTROL_ENCODER_SW3_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW3_VAR3_CC, CONTROL_ENCODER_SW3_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW3_VAR4_CC, CONTROL_ENCODER_SW3_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW3_VAR5_CC, CONTROL_ENCODER_SW3_VAR5_DATA}};
-
-static table_t a_sw4_fsm_table[SW1_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW4_VAR0_CC, CONTROL_ENCODER_SW4_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW4_VAR1_CC, CONTROL_ENCODER_SW4_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW4_VAR2_CC, CONTROL_ENCODER_SW4_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW4_VAR3_CC, CONTROL_ENCODER_SW4_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW4_VAR4_CC, CONTROL_ENCODER_SW4_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW4_VAR5_CC, CONTROL_ENCODER_SW4_VAR5_DATA}};
-
-static table_t a_sw5_fsm_table[SW1_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW5_VAR0_CC, CONTROL_ENCODER_SW5_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW5_VAR1_CC, CONTROL_ENCODER_SW5_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW5_VAR2_CC, CONTROL_ENCODER_SW5_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW5_VAR3_CC, CONTROL_ENCODER_SW5_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW5_VAR4_CC, CONTROL_ENCODER_SW5_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW5_VAR5_CC, CONTROL_ENCODER_SW5_VAR5_DATA}};
-
-static table_t a_sw6_fsm_table[SW1_SIZE_FSM_TABLE] = {{CONTROL_ENCODER_SW6_VAR0_CC, CONTROL_ENCODER_SW6_VAR0_DATA},
-                                                      {CONTROL_ENCODER_SW6_VAR1_CC, CONTROL_ENCODER_SW6_VAR1_DATA},
-                                                      {CONTROL_ENCODER_SW6_VAR2_CC, CONTROL_ENCODER_SW6_VAR2_DATA},
-                                                      {CONTROL_ENCODER_SW6_VAR3_CC, CONTROL_ENCODER_SW6_VAR3_DATA},
-                                                      {CONTROL_ENCODER_SW6_VAR4_CC, CONTROL_ENCODER_SW6_VAR4_DATA},
-                                                      {CONTROL_ENCODER_SW6_VAR5_CC, CONTROL_ENCODER_SW6_VAR5_DATA}};
 
 /******************************************************************************
  * PUBLIC DATA
  ******************************************************************************/
 uint8_t bufferUartTx[SIZE_BUF_USART2];
+
+
+
 /******************************************************************************
  * EXTERNAL DATA
  ******************************************************************************/
+extern control_cfg_t control_cfg_default;
+
+
 
 /******************************************************************************
  * EXTERNAL FUNCTION PROTOTYPES
@@ -631,6 +555,34 @@ static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size)
  ******************************************************************************/
 
 /**
+ * @brief Init control module
+ *
+ */
+STD_RESULT control_init(void)
+{
+	STD_RESULT retval  = RESULT_NOT_OK;
+	uint32_t cal_crc32 = 0U;
+	uint32_t act_crc32 = 0U;
+
+	// Check CRC32
+	cal_crc32 = crc32((uint8_t*)CONTROL_ADR_STORE_CONFIG, CONTROL_CFG_DATA_SIZE_BYTES, 0U, TRUE, TRUE);
+	act_crc32 = (uint32_t*)(CONTROL_ADR_STORE_CONFIG + CONTROL_CFG_DATA_SIZE_BYTES - sizeof(uint32_t));
+
+	if (act_crc32 == cal_crc32)
+	{
+		memcpy((uint8_t)&control_cfg, (uint8_t*)CONTROL_ADR_STORE_CONFIG, sizeof(control_cfg));
+		retval = RESULT_OK;
+	}
+	else
+	{
+		// Get default configs
+		memcpy((uint8_t)&control_cfg, (uint8_t*)&control_cfg_default, sizeof(control_cfg));
+	}
+
+	return retval;
+}
+
+/**
  * @brief Polling encoders and buttons of control panel
  *
  */
@@ -640,63 +592,63 @@ void control_poll(void)
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW1_CH, &sw1_input_prm, &last_buttons_state_sw1, &n_cnt_trig_schmitt_sw1))
     {
-        value = a_sw1_fsm_table[sw1_input_prm.R];
+        value = control_cfg.sw1_fsm_table[sw1_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW2_CH, &sw2_input_prm, &last_buttons_state_sw2, &n_cnt_trig_schmitt_sw2))
     {
-        value = a_sw2_fsm_table[sw2_input_prm.R];
+        value = control_cfg.sw2_fsm_table[sw2_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW3_CH, &sw3_input_prm, &last_buttons_state_sw3, &n_cnt_trig_schmitt_sw3))
     {
-        value = a_sw3_fsm_table[sw3_input_prm.R];
+        value = control_cfg.sw3_fsm_table[sw3_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW4_CH, &sw4_input_prm, &last_buttons_state_sw4, &n_cnt_trig_schmitt_sw4))
     {
-        value = a_sw4_fsm_table[sw4_input_prm.R];
+        value = control_cfg.sw4_fsm_table[sw4_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW5_CH, &sw5_input_prm, &last_buttons_state_sw5, &n_cnt_trig_schmitt_sw5))
     {
-        value = a_sw5_fsm_table[sw5_input_prm.R];
+        value = control_cfg.sw5_fsm_table[sw5_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW6_CH, &sw6_input_prm, &last_buttons_state_sw6, &n_cnt_trig_schmitt_sw6))
     {
-        value = a_sw6_fsm_table[sw6_input_prm.R];
+        value = control_cfg.sw6_fsm_table[sw6_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw7_input_prm())
     {
-        value = a_sw7_fsm_table[sw7_input_prm.R];
+        value = control_cfg.sw7_fsm_table[sw7_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
     
     if (RESULT_OK == update_sw9_input_prm())
     {
-        value = a_sw9_fsm_table[sw9_input_prm.R];
+        value = control_cfg.sw9_fsm_table[sw9_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw10_input_prm())
     {
-        value = a_sw10_fsm_table[sw10_input_prm.R];
+        value = control_cfg.sw10_fsm_table[sw10_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
@@ -707,7 +659,7 @@ void control_poll(void)
 
     if (RESULT_OK == update_sw12_input_prm())
     {
-        value = a_sw12_fsm_table[sw12_input_prm.R];
+        value = control_cfg.sw12_fsm_table[sw12_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }

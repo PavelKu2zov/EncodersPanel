@@ -85,6 +85,7 @@ void app_entry_point(void)
     encoder_init();
     buttons_init();
 	CIRCBUF_Init(p_circ_buff_hdl, cicr_buffer, API_CIRC_BUFFER_SIZE_BYTES);
+	control_init();
 
     for (;;)
     {
