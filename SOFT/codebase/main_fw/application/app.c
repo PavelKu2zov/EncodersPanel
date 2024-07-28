@@ -26,6 +26,9 @@
 #include "control_drv.h"
 #include "stm32f10x.h"
 #include "string.h"
+#include "circ_buffer.h"
+
+
 
 /******************************************************************************
  * DEFINES
@@ -87,10 +90,8 @@ void app_entry_point(void)
  */
 void TIM3_IRQHandler(void)
 {
-    GPIO_SetBits(GPIOB, GPIO_Pin_10);
     encoder_calculate_rotations();
     TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-    GPIO_ResetBits(GPIOB, GPIO_Pin_10);
 }
 
 void HardFault_Handler(void)
