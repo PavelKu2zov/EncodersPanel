@@ -17,9 +17,17 @@ void bsp_init()
 
     /******************************** GPIO *********************/
     GPIO_InitTypeDef GPIO_InitStruct;
-    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_10; // Test pin
+
+	// Uart3 tx
+    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_10;
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	// Uart3 rx
+	GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_11;
+    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
     GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // Uart tx
@@ -78,6 +86,16 @@ void bsp_init()
     USART_InitStruct.USART_Mode                = USART_Mode_Tx;
     USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_Init(USART1, &USART_InitStruct);
+
+	/********************************Usart3***************************/
+    USART_InitStruct.USART_BaudRate            = 115200;
+    USART_InitStruct.USART_WordLength          = USART_WordLength_8b;
+    USART_InitStruct.USART_StopBits            = USART_StopBits_1;
+    USART_InitStruct.USART_Parity              = USART_Parity_No;
+    USART_InitStruct.USART_Mode                = USART_Mode_Tx | USART_Mode_Rx;
+    USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_Init(USART3, &USART_InitStruct);
+	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
 
 #if 0
     USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
