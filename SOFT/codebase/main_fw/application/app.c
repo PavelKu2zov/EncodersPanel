@@ -25,17 +25,15 @@
 #include "buttons_drv.h"
 #include "control_drv.h"
 #include "stm32f10x.h"
-#include "stm32f10x_usart.h"
 #include "string.h"
 #include "circ_buffer.h"
+#include "upl_cfg_service.h"
 
 
 
 /******************************************************************************
  * DEFINES
  ******************************************************************************/
-#define API_CIRC_BUFFER_SIZE_BYTES             (258U)
-
 
 /******************************************************************************
  * PRIVATE TYPES
@@ -44,10 +42,6 @@
 /******************************************************************************
  * PRIVATE DATA
  ******************************************************************************/
-static stCIRCBUF* const p_circ_buff_hdl;
-static uint8_t cicr_buffer[API_CIRC_BUFFER_SIZE_BYTES];
-
-
 
 /******************************************************************************
  * PUBLIC DATA
@@ -84,12 +78,13 @@ void app_entry_point(void)
     bsp_init();
     encoder_init();
     buttons_init();
-	CIRCBUF_Init(p_circ_buff_hdl, cicr_buffer, API_CIRC_BUFFER_SIZE_BYTES);
 	control_init();
+	upl_cfg_srvc_init();
 
     for (;;)
     {
         control_poll();
+		upl_cfg_srvc_process();
         // Delay(250);
     }
 }
@@ -143,17 +138,6 @@ void HardFault_Handler(void)
         for (uint32_t i = 0; i < 0xfffff; i++)
             ;
     }
-}
-
-void USART3_IRQHandler(void)
-{
-	uint8_t rx_data = 0U;
-
-	if (SET == USART_GetFlagStatus(USART3, USART_FLAG_RXNE))
-	{
-		rx_data = (uint8_t)USART_ReceiveData(USART3);
-		CIRCBUF_PutData(&rx_data, p_circ_buff_hdl);
-	}
 }
 
 
