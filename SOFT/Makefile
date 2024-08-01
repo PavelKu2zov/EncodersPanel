@@ -42,9 +42,12 @@ C_SOURCES =  \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c \
 	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c \
+	codebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/src/stm32f10x_flash.c \
 	codebase/main_fw/hardware/mcu_hal/system_stm32f10x.c \
 	codebase/main_fw/middleware/Circular_Buffer/Latest/circ_buffer.c \
-	codebase/main_fw/middleware/Common/scr/crc.c
+	codebase/main_fw/middleware/Common/scr/crc.c \
+	codebase/main_fw/middleware/upload_config_service/upl_cfg_service.c \
+	codebase/main_fw/middleware/async_xmodem-master/xmodem_server.c
 
 C_INCLUDES =  \
 	-Icodebase/main_fw/application \
@@ -57,7 +60,9 @@ C_INCLUDES =  \
 	-Icodebase/main_fw/hardware/CMSIS/CM3/CoreSupport \
 	-Icodebase/main_fw/hardware/mcu_hal/STM32F10x_StdPeriph_Driver/inc \
 	-Icodebase/main_fw/middleware/Circular_Buffer/Latest \
-	-Icodebase/main_fw/middleware/Common/inc
+	-Icodebase/main_fw/middleware/Common/inc \
+	-Icodebase/main_fw/middleware/upload_config_service \
+	-Icodebase/main_fw/middleware/async_xmodem-master
 
 
 # ASM sources
