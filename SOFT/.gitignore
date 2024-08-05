@@ -380,3 +380,4 @@ $RECYCLE.BIN/
 /DOC/*
 /CAD/*
 *.zip
+/.vscode/*
