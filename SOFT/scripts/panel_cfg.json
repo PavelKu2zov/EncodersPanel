@@ -1,0 +1,31 @@
+{
+    "version": "0.0.1",
+	"encoder_sw7":
+	[
+		{"encoder_sw7_var4_cc":    2,   "encoder_sw7_var4_data":  65,  "description": "right, sw11_pos1, sw8_pos1, button_on"},
+		{"encoder_sw7_var6_cc":    3,   "encoder_sw7_var6_data":  65,  "description": "left, sw11_pos1, sw8_pos1, button_on"},
+		{"encoder_sw7_var12_cc":   125, "encoder_sw7_var12_data": 126, "description": "right, sw11_pos2, sw8_pos1, button_on"},
+		{"encoder_sw7_var14_cc":   129, "encoder_sw7_var14_data": 130, "description": "left, sw11_pos2, sw8_pos1, button_on"},
+		{"encoder_sw7_var20_cc":   141, "encoder_sw7_var20_data": 142, "description": "right, sw11_pos3, sw8_pos1, button_on"},
+		{"encoder_sw7_var22_cc":   145, "encoder_sw7_var22_data": 146, "description": "left, sw11_pos3, sw8_pos1, button_on"},
+		{"encoder_sw7_var5_cc":    6,   "encoder_sw7_var5_data":  65,  "description": "right, sw11_pos1, sw8_pos2, button_on"},
+		{"encoder_sw7_var7_cc":    7,   "encoder_sw7_var7_data":  65,  "description": "left, sw11_pos1, sw8_pos2, button_on"},
+		{"encoder_sw7_var13_cc":   100, "encoder_sw7_var13_data": 65,  "description": "right, sw11_pos2, sw8_pos2, button_on"},
+		{"encoder_sw7_var15_cc":   101, "encoder_sw7_var15_data": 65,  "description": "left, sw11_pos2, sw8_pos2, button_on"},
+		{"encoder_sw7_var21_cc":   143, "encoder_sw7_var21_data": 144, "description": "right, sw11_pos3, sw8_pos2, button_on"},
+		{"encoder_sw7_var23_cc":   147, "encoder_sw7_var23_data": 148, "description": "left, sw11_pos3, sw8_pos2, button_on"},
+		{"encoder_sw7_var0_cc":    2,   "encoder_sw7_var0_data":  65,  "description": "right, sw11_pos1, sw8_pos1, button_off"},
+		{"encoder_sw7_var2_cc":    3,   "encoder_sw7_var2_data":  65,  "description": "left, sw11_pos1, sw8_pos1, button_off"},
+		{"encoder_sw7_var8_cc":    6,   "encoder_sw7_var8_data":  127, "description": "right, sw11_pos2, sw8_pos1, button_off"},
+		{"encoder_sw7_var10_cc":   6,   "encoder_sw7_var10_data": 1,   "description": "left, sw11_pos2, sw8_pos1, button_off"},
+		{"encoder_sw7_var16_cc":   120, "encoder_sw7_var16_data": 65,  "description": "right, sw11_pos3, sw8_pos1, button_off"},
+		{"encoder_sw7_var18_cc":   120, "encoder_sw7_var18_data": 12,  "description": "left, sw11_pos3, sw8_pos1, button_off"},
+		{"encoder_sw7_var1_cc":    6,   "encoder_sw7_var1_data":  65,  "description": "right, sw11_pos1, sw8_pos2, button_off"},
+		{"encoder_sw7_var3_cc":    7,   "encoder_sw7_var3_data":  65,  "description": "left, sw11_pos1, sw8_pos2, button_off"},
+		{"encoder_sw7_var9_cc":    100, "encoder_sw7_var9_data":  65,  "description": "right, sw11_pos2, sw8_pos2, button_off"},
+		{"encoder_sw7_var11_cc":   101, "encoder_sw7_var11_data": 65,  "description": "left, sw11_pos2, sw8_pos2, button_off"},
+		{"encoder_sw7_var17_cc":   121, "encoder_sw7_var17_data": 65,  "description": "right, sw11_pos3, sw8_pos2, button_off"},
+		{"encoder_sw7_var19_cc":   122, "encoder_sw7_var19_data": 65,  "description": "left, sw11_pos3, sw8_pos2, button_off"}
+	]
+
+}
