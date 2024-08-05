@@ -38,6 +38,7 @@ extern "C"
 #define SW10_SIZE_FSM_TABLE     (12U)
 #define SW12_SIZE_FSM_TABLE     (24U)
 #define SW1_SIZE_FSM_TABLE      (6U)
+#define CONTROL_ADR_STORE_CONFIG 			(0x08007C00UL)
 
 
 

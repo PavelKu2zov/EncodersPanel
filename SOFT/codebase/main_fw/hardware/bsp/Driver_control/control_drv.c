@@ -36,12 +36,7 @@
 #define TRIG_SCHMITT            (3U)
 #define TRIG_SCHMITT_SW_BUTTONS (20U)
 
-#define CONTROL_ADR_STORE_CONFIG 			(0x08007C00UL)
-#define CONTROL_CFG_DATA_SIZE_BYTES         (SW7_SIZE_FSM_TABLE  + \
-											 SW9_SIZE_FSM_TABLE  + \
-											 SW10_SIZE_FSM_TABLE + \
-											 SW12_SIZE_FSM_TABLE + \
-											 (6U * SW1_SIZE_FSM_TABLE))
+#define CONTROL_CFG_DATA_SIZE_BYTES         (sizeof(control_cfg_t) - 4U)
 
 
 
@@ -566,17 +561,17 @@ STD_RESULT control_init(void)
 
 	// Check CRC32
 	cal_crc32 = crc32((uint8_t*)CONTROL_ADR_STORE_CONFIG, CONTROL_CFG_DATA_SIZE_BYTES, 0U, TRUE, TRUE);
-	act_crc32 = (uint32_t*)(CONTROL_ADR_STORE_CONFIG + CONTROL_CFG_DATA_SIZE_BYTES - sizeof(uint32_t));
+	act_crc32 = *(uint32_t*)(CONTROL_ADR_STORE_CONFIG + CONTROL_CFG_DATA_SIZE_BYTES);
 
 	if (act_crc32 == cal_crc32)
 	{
-		memcpy((uint8_t)&control_cfg, (uint8_t*)CONTROL_ADR_STORE_CONFIG, sizeof(control_cfg));
+		memcpy((uint8_t*)&control_cfg, (uint8_t*)CONTROL_ADR_STORE_CONFIG, sizeof(control_cfg));
 		retval = RESULT_OK;
 	}
 	else
 	{
 		// Get default configs
-		memcpy((uint8_t)&control_cfg, (uint8_t*)&control_cfg_default, sizeof(control_cfg));
+		memcpy((uint8_t*)&control_cfg, (uint8_t*)&control_cfg_default, sizeof(control_cfg));
 	}
 
 	return retval;
