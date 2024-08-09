@@ -36,7 +36,6 @@ extern "C"
 #define SW7_SIZE_FSM_TABLE      (24U)
 #define SW9_SIZE_FSM_TABLE      (12U)
 #define SW10_SIZE_FSM_TABLE     (12U)
-#define SW12_SIZE_FSM_TABLE     (24U)
 #define SW1_SIZE_FSM_TABLE      (6U)
 #define CONTROL_ADR_STORE_CONFIG 			(0x08007C00UL)
 
@@ -61,7 +60,6 @@ typedef __PACKED_STRUCT
 	table_t sw7_fsm_table[SW7_SIZE_FSM_TABLE];
 	table_t sw9_fsm_table[SW9_SIZE_FSM_TABLE];
 	table_t sw10_fsm_table[SW10_SIZE_FSM_TABLE];
-	table_t sw12_fsm_table[SW12_SIZE_FSM_TABLE];
 	table_t sw1_fsm_table[SW1_SIZE_FSM_TABLE];
 	table_t sw2_fsm_table[SW1_SIZE_FSM_TABLE];
 	table_t sw3_fsm_table[SW1_SIZE_FSM_TABLE];

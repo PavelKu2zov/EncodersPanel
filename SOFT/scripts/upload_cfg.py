@@ -14,7 +14,6 @@ var = ['CC', 'DATA']
 sw7_prm = {"SW7": [f'VAR{i}_{j}' for i in range(0, 24) for j in var]}
 sw9_prm = {"SW9": [f'VAR{i}_{j}' for i in range(0, 12) for j in var]}
 sw10_prm = {"SW10": [f'VAR{i}_{j}' for i in range(0, 12) for j in var]}
-sw12_prm = {"SW12": [f'VAR{i}_{j}' for i in range(0, 24) for j in var]}
 sw1_prm = {"SW1": [f'VAR{i}_{j}' for i in range(0, 6) for j in var]}
 sw2_prm = {"SW2": [f'VAR{i}_{j}' for i in range(0, 6) for j in var]}
 sw3_prm = {"SW3": [f'VAR{i}_{j}' for i in range(0, 6) for j in var]}
@@ -22,7 +21,7 @@ sw4_prm = {"SW4": [f'VAR{i}_{j}' for i in range(0, 6) for j in var]}
 sw5_prm = {"SW5": [f'VAR{i}_{j}' for i in range(0, 6) for j in var]}
 sw6_prm = {"SW6": [f'VAR{i}_{j}' for i in range(0, 6) for j in var]}
 
-prm_list = [sw7_prm, sw9_prm, sw10_prm, sw12_prm, sw1_prm, sw2_prm, sw3_prm, sw4_prm, sw5_prm, sw6_prm]
+prm_list = [sw7_prm, sw9_prm, sw10_prm, sw1_prm, sw2_prm, sw3_prm, sw4_prm, sw5_prm, sw6_prm]
 
 s = serial.Serial(port='/dev/ttyUSB0', baudrate=115200, bytesize=8, parity='N', stopbits=1, timeout=None, xonxoff=0, rtscts=0)
 
