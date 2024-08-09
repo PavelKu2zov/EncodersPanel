@@ -72,7 +72,7 @@ extern "C"
 #define BUTTONS_GPIO_PIN_MODE_CH6 (GPIO_Mode_IPU)
 #define BUTTONS_ACTIVE_CH6        (BUTTONS_ACTIVE_STATE_LOW)
 
-#define BUTTONS_CH7_EN            (ON)// button of encoder SW12
+#define BUTTONS_CH7_EN            (OFF)// button of encoder SW12
 #define BUTTONS_GPIO_PORT_CH7     GPIOB
 #define BUTTONS_GPIO_PIN_CH7      (GPIO_Pin_12)
 #define BUTTONS_GPIO_PIN_MODE_CH7 (GPIO_Mode_IN_FLOATING)

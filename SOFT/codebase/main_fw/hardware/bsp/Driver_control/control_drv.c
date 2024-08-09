@@ -100,11 +100,9 @@ static sw1_input_prm_t sw4_input_prm;
 static sw1_input_prm_t sw5_input_prm;
 static sw1_input_prm_t sw6_input_prm;
 static sw7_input_prm_t sw7_input_prm;
-static sw7_input_prm_t sw12_input_prm;
 static sw9_input_prm_t sw9_input_prm;
 static sw9_input_prm_t sw10_input_prm;
 static buttons_state_t last_buttons_state_sw7_1  = BUTTONS_NOT_ACTIVE;
-static buttons_state_t last_buttons_state_sw12_1 = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw1    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw2    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw3    = BUTTONS_NOT_ACTIVE;
@@ -112,7 +110,6 @@ static buttons_state_t last_buttons_state_sw4    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw5    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw6    = BUTTONS_NOT_ACTIVE;
 static uint8_t         n_cnt_trig_schmitt_sw7_1  = 0;
-static uint8_t         n_cnt_trig_schmitt_sw12_1 = 0;
 static uint8_t         n_cnt_trig_schmitt_sw1    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw2    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw3    = 0;
@@ -150,7 +147,6 @@ static STD_RESULT update_sw_buttons_input_prm(uint8_t sw_but_ch, sw1_input_prm_t
 static STD_RESULT update_sw7_input_prm(void);
 static STD_RESULT update_sw9_input_prm(void);
 static STD_RESULT update_sw10_input_prm(void);
-static STD_RESULT update_sw12_input_prm(void);
 
 static STD_RESULT get_toggle_sw11_pos(toggle_pos_t * toggle_pos);
 static STD_RESULT get_toggle_sw8_pos(toggle_pos_t * toggle_pos);
@@ -466,73 +462,6 @@ static STD_RESULT update_sw10_input_prm(void)
 }
 
 /**
- * @brief Update input parameters of encoder SW12
- *
- */
-static STD_RESULT update_sw12_input_prm(void)
-{
-    STD_RESULT      result = RESULT_NOT_OK;
-    int32_t         encoder_impulses;
-    buttons_state_t buttons_state;
-    toggle_pos_t    toggle_pos;
-
-    encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW12_CH);
-    buttons_state    = buttons_get_value(CONTROL_BUTTON_SW12_1_CH);
-
-    if ((last_buttons_state_sw12_1 != buttons_state) && (TRIG_SCHMITT < n_cnt_trig_schmitt_sw12_1))
-    {
-        if (BUTTONS_ACTIVE == buttons_state)
-        {
-            sw12_input_prm.B.enc_button = (~sw12_input_prm.B.enc_button) & 0x01;
-        }
-        last_buttons_state_sw12_1 = buttons_state;
-        n_cnt_trig_schmitt_sw12_1 = 0;
-    }
-    else
-    {
-        n_cnt_trig_schmitt_sw12_1++;
-    }
-
-    if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
-    {
-        sw12_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
-
-        if (BUTTONS_ER != buttons_state)
-        {
-
-            if (RESULT_OK == get_toggle_sw11_pos(&toggle_pos))
-            {
-                sw12_input_prm.B.toggle_3pos = toggle_pos;
-
-                if (RESULT_OK == get_toggle_sw8_pos(&toggle_pos))
-                {
-                    sw12_input_prm.B.toggle_2pos = toggle_pos;
-                    result                       = RESULT_OK;
-                }
-                else
-                {
-                    result = RESULT_NOT_OK;
-                }
-            }
-            else
-            {
-                result = RESULT_NOT_OK;
-            }
-        }
-        else
-        {
-            result = RESULT_NOT_OK;
-        }
-    }
-    else
-    {
-        result = RESULT_NOT_OK;
-    }
-
-    return result;
-}
-
-/**
  * @brief Send midi fram to USART
  *
  * @param pucbufferUartTx
@@ -653,17 +582,6 @@ void control_poll(void)
     if (RESULT_OK == update_sw10_input_prm())
     {
         value = control_cfg.sw10_fsm_table[sw10_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
-        USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
-    }
-    else
-    {
-        DoNothing();
-    }
-
-    if (RESULT_OK == update_sw12_input_prm())
-    {
-        value = control_cfg.sw12_fsm_table[sw12_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
