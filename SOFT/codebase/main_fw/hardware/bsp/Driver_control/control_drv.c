@@ -315,8 +315,17 @@ static STD_RESULT update_sw7_input_prm(void)
         {
             if (BUTTONS_ACTIVE == buttons_state)
             {
-                sw7_input_prm.B.enc_button = (~sw7_input_prm.B.enc_button) & 0x1;
+                sw7_input_prm.B.enc_button = 1U;
             }
+			else if (BUTTONS_NOT_ACTIVE == buttons_state)
+            {
+                sw7_input_prm.B.enc_button = 0U;
+            }
+			else
+			{
+				// Do nothing
+			}
+
             n_cnt_trig_schmitt_sw7_1 = 0;
             last_buttons_state_sw7_1 = buttons_state;
         }
