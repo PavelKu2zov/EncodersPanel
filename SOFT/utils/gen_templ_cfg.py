@@ -8,7 +8,6 @@ data_default = 20
 cnt = 0
 
 # gen = 'SW7'
-# gen = 'SW12'
 # gen = 'SW9'
 # gen = 'SW10'
 gen = 'SW1'
@@ -21,15 +20,6 @@ if gen == 'SW7':
                     print(f'#define CONTROL_ENCODER_SW7_VAR{cnt}_CC ({cc_default}) // {item_rotation}, {item_sw11}, {item_sw8}, {item_button}')
                     print(f'#define CONTROL_ENCODER_SW7_VAR{cnt}_DATA ({data_default})')
                     cnt+=1
-elif gen == 'SW12':
-    for item_button in button:
-        for item_sw8 in sw8_pos:
-            for item_sw11 in sw11_pos:  
-                for item_rotation in rotations:
-                    print(f'#define CONTROL_ENCODER_SW12_VAR{cnt}_CC ({cc_default}) // {item_rotation}, {item_sw11}, {item_sw8}, {item_button}')
-                    print(f'#define CONTROL_ENCODER_SW12_VAR{cnt}_DATA ({data_default})')
-                    cnt+=1
-
 elif gen == 'SW9':
     for item_sw8 in sw8_pos:
         for item_sw11 in sw11_pos:  
