@@ -46,6 +46,10 @@ extern "C"
 #define BUTTONS_CH8 (8U)
 #define BUTTONS_CH9 (9U)
 #define BUTTONS_CH10 (10U)
+#define BUTTONS_CH11 (11U)
+#define BUTTONS_CH12 (12U)
+
+
 
 /******************************************************************************
  * PUBLIC TYPES

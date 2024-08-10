@@ -26,6 +26,8 @@
 #include "stm32f10x.h"
 #include "crc.h"
 #include "stm32f10x_usart.h"
+#include <stdio.h>
+#include <string.h>
 
 
 
@@ -56,11 +58,12 @@ typedef union
 {
     struct
     {
-        uint8_t toggle_2pos : 1;
         uint8_t dir_rotation : 1;
-        uint8_t enc_button : 1;
-        uint8_t toggle_3pos : 2;
-        uint8_t : 3;
+        uint8_t toggle_2pos  : 1;
+		uint8_t button_a     : 1;
+		uint8_t button_b     : 1;
+        uint8_t toggle_3pos  : 2;
+        uint8_t reserve      : 1;
     } B;
     uint8_t R;
 } sw7_input_prm_t;
@@ -69,21 +72,27 @@ typedef union
 {
     struct
     {
-        uint8_t toggle_2pos : 1;
         uint8_t dir_rotation : 1;
-        uint8_t toggle_3pos : 2;
-        uint8_t : 4;
+        uint8_t toggle_2pos  : 1;
+		uint8_t button_a     : 1;
+		uint8_t button_b     : 1;
+        uint8_t toggle_3pos  : 2;
+        uint8_t reserve      : 2;
     } B;
     uint8_t R;
 } sw9_input_prm_t;
+
+typedef sw9_input_prm_t sw10_input_prm_t;
 
 typedef union
 {
     struct
     {
+        uint8_t button_a    : 1;
+		uint8_t button_b    : 1;
         uint8_t toggle_2pos : 1;
         uint8_t toggle_3pos : 2;
-        uint8_t : 5;
+        uint8_t reserve     : 3;
     } B;
     uint8_t R;
 } sw1_input_prm_t;
@@ -93,8 +102,6 @@ typedef union
 /******************************************************************************
  * PRIVATE DATA
  ******************************************************************************/
-
-static buttons_state_t buttons_state[BUTTONS_QTY];
 static sw1_input_prm_t sw1_input_prm;
 static sw1_input_prm_t sw2_input_prm;
 static sw1_input_prm_t sw3_input_prm;
@@ -103,7 +110,10 @@ static sw1_input_prm_t sw5_input_prm;
 static sw1_input_prm_t sw6_input_prm;
 static sw7_input_prm_t sw7_input_prm;
 static sw9_input_prm_t sw9_input_prm;
-static sw9_input_prm_t sw10_input_prm;
+static sw10_input_prm_t sw10_input_prm;
+static sw1_input_prm_t sw12_input_prm;
+static sw1_input_prm_t sw13_input_prm;
+static sw1_input_prm_t sw7_1_input_prm;
 static buttons_state_t last_buttons_state_sw7_1  = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw1    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw2    = BUTTONS_NOT_ACTIVE;
@@ -111,6 +121,8 @@ static buttons_state_t last_buttons_state_sw3    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw4    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw5    = BUTTONS_NOT_ACTIVE;
 static buttons_state_t last_buttons_state_sw6    = BUTTONS_NOT_ACTIVE;
+static buttons_state_t last_buttons_state_sw12   = BUTTONS_NOT_ACTIVE;
+static buttons_state_t last_buttons_state_sw13   = BUTTONS_NOT_ACTIVE;
 static uint8_t         n_cnt_trig_schmitt_sw7_1  = 0;
 static uint8_t         n_cnt_trig_schmitt_sw1    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw2    = 0;
@@ -118,6 +130,8 @@ static uint8_t         n_cnt_trig_schmitt_sw3    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw4    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw5    = 0;
 static uint8_t         n_cnt_trig_schmitt_sw6    = 0;
+static uint8_t         n_cnt_trig_schmitt_sw12   = 0;
+static uint8_t         n_cnt_trig_schmitt_sw13   = 0;
 
 static control_cfg_t control_cfg;
 
@@ -277,6 +291,32 @@ static STD_RESULT update_sw_buttons_input_prm(uint8_t sw_but_ch, sw1_input_prm_t
             }
             *last_buttons_state_sw = buttons_state;
             *n_cnt_trig_schmitt_sw = 0;
+
+            if (BUTTONS_ACTIVE == last_buttons_state_sw12)
+            {
+                sw_input_prm->B.button_a = 1U;
+            }
+            else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw12)
+            {
+                sw_input_prm->B.button_a = 0U;
+            }
+            else
+            {
+                // Do nothing
+            }
+
+            if (BUTTONS_ACTIVE == last_buttons_state_sw13)
+            {
+                sw_input_prm->B.button_b = 1U;
+            }
+            else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw13)
+            {
+                sw_input_prm->B.button_b = 0U;
+            }
+            else
+            {
+                // Do nothing
+            }
         }
         else
         {
@@ -300,44 +340,44 @@ static STD_RESULT update_sw7_input_prm(void)
 {
     STD_RESULT      result = RESULT_NOT_OK;
     int32_t         encoder_impulses;
-    buttons_state_t buttons_state;
+    buttons_state_t sw7_buttons_state;
     toggle_pos_t    toggle_pos;
 
     encoder_impulses = encoder_get_channel_value(CONTROL_ENCODER_SW7_CH);
 
-    buttons_state = buttons_get_value(CONTROL_BUTTON_SW7_1_CH);
+    sw7_buttons_state  = buttons_get_value(CONTROL_BUTTON_SW7_1_CH);
 
-    if (BUTTONS_ER != buttons_state)
-    {
-        if ((last_buttons_state_sw7_1 != buttons_state) && (TRIG_SCHMITT < n_cnt_trig_schmitt_sw7_1))
-        {
-            if (BUTTONS_ACTIVE == buttons_state)
-            {
-                sw7_input_prm.B.enc_button = 1U;
-            }
-			else if (BUTTONS_NOT_ACTIVE == buttons_state)
-            {
-                sw7_input_prm.B.enc_button = 0U;
-            }
-			else
-			{
-				// Do nothing
-			}
+	if (BUTTONS_ACTIVE == last_buttons_state_sw12)
+	{
+		sw7_input_prm.B.button_a = 1U;
+	}
+	else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw12)
+	{
+		sw7_input_prm.B.button_a = 0U;
+	}
+	else
+	{
+		// Do nothing
+	}
 
-            n_cnt_trig_schmitt_sw7_1 = 0;
-            last_buttons_state_sw7_1 = buttons_state;
-        }
-        else
-        {
-            n_cnt_trig_schmitt_sw7_1++;
-        }
-    }
+	if (BUTTONS_ACTIVE == last_buttons_state_sw13)
+	{
+		sw7_input_prm.B.button_b = 1U;
+	}
+	else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw13)
+	{
+		sw7_input_prm.B.button_b = 0U;
+	}
+	else
+	{
+		// Do nothing
+	}
 
     if (ENCODER_DIR_ROTATION_NONE != ENCODER_GET_DIR_ROTATION(encoder_impulses))
     {
         sw7_input_prm.B.dir_rotation = ENCODER_GET_DIR_ROTATION(encoder_impulses);
 
-        if (BUTTONS_ER != buttons_state)
+        if (BUTTONS_ER != sw7_buttons_state)
         {
             if (RESULT_OK == get_toggle_sw11_pos(&toggle_pos))
             {
@@ -414,6 +454,32 @@ static STD_RESULT update_sw9_input_prm(void)
         result = RESULT_NOT_OK;
     }
 
+	if (BUTTONS_ACTIVE == last_buttons_state_sw12)
+	{
+		sw9_input_prm.B.button_a = 1U;
+	}
+	else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw12)
+	{
+		sw9_input_prm.B.button_a = 0U;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (BUTTONS_ACTIVE == last_buttons_state_sw13)
+	{
+		sw9_input_prm.B.button_b = 1U;
+	}
+	else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw13)
+	{
+		sw9_input_prm.B.button_b = 0U;
+	}
+	else
+	{
+		// Do nothing
+	}
+
     return result;
 }
 
@@ -460,6 +526,32 @@ static STD_RESULT update_sw10_input_prm(void)
         result = RESULT_NOT_OK;
     }
 
+	if (BUTTONS_ACTIVE == last_buttons_state_sw12)
+	{
+		sw10_input_prm.B.button_a = 1U;
+	}
+	else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw12)
+	{
+		sw10_input_prm.B.button_a = 0U;
+	}
+	else
+	{
+		// Do nothing
+	}
+
+	if (BUTTONS_ACTIVE == last_buttons_state_sw13)
+	{
+		sw10_input_prm.B.button_b = 1U;
+	}
+	else if (BUTTONS_NOT_ACTIVE == last_buttons_state_sw13)
+	{
+		sw10_input_prm.B.button_b = 0U;
+	}
+	else
+	{
+		// Do nothing
+	}
+
     return result;
 }
 
@@ -483,6 +575,19 @@ static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size)
         while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
             ;
     }
+
+#if 0
+	char s[25];
+
+	snprintf(s, 25, "%02d %02d\r\n", pucbufferUartTx[1], pucbufferUartTx[2]);
+
+	for (uint16_t i = 0; i < strlen(s); i++)
+    {
+        USART_SendData(USART3, s[i]);
+        while (RESET == USART_GetFlagStatus(USART3, USART_FLAG_TXE))
+            ;
+    }
+#endif
 }
 
 /******************************************************************************
@@ -525,6 +630,10 @@ void control_poll(void)
 {
     table_t value;
 
+	// First update mode buttons
+	update_sw_buttons_input_prm(CONTROL_BUTTON_SW12_CH, &sw12_input_prm, &last_buttons_state_sw12, &n_cnt_trig_schmitt_sw12);
+    update_sw_buttons_input_prm(CONTROL_BUTTON_SW13_CH, &sw13_input_prm, &last_buttons_state_sw13, &n_cnt_trig_schmitt_sw13);
+
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW1_CH, &sw1_input_prm, &last_buttons_state_sw1, &n_cnt_trig_schmitt_sw1))
     {
         value = control_cfg.sw1_fsm_table[sw1_input_prm.R];
@@ -563,6 +672,13 @@ void control_poll(void)
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW6_CH, &sw6_input_prm, &last_buttons_state_sw6, &n_cnt_trig_schmitt_sw6))
     {
         value = control_cfg.sw6_fsm_table[sw6_input_prm.R];
+        create_midi_frame(value.prm.cc, value.prm.data);
+        USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
+    }
+
+    if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW7_1_CH, &sw7_1_input_prm, &last_buttons_state_sw7_1, &n_cnt_trig_schmitt_sw7_1))
+    {
+        value = control_cfg.sw7_1_fsm_table[sw7_1_input_prm.R];
         create_midi_frame(value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
