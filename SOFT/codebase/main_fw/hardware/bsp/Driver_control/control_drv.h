@@ -33,10 +33,10 @@ extern "C"
 /******************************************************************************
  * DEFINES
  ******************************************************************************/
-#define SW7_SIZE_FSM_TABLE      (24U)
-#define SW9_SIZE_FSM_TABLE      (12U)
-#define SW10_SIZE_FSM_TABLE     (12U)
-#define SW1_SIZE_FSM_TABLE      (6U)
+#define SW7_SIZE_FSM_TABLE      (48U)
+#define SW9_SIZE_FSM_TABLE      (48U)
+#define SW10_SIZE_FSM_TABLE     (48U)
+#define SW1_SIZE_FSM_TABLE      (24U)
 #define CONTROL_ADR_STORE_CONFIG 			(0x08007C00UL)
 
 
@@ -66,6 +66,7 @@ typedef __PACKED_STRUCT
 	table_t sw4_fsm_table[SW1_SIZE_FSM_TABLE];
 	table_t sw5_fsm_table[SW1_SIZE_FSM_TABLE];
 	table_t sw6_fsm_table[SW1_SIZE_FSM_TABLE];
+	table_t sw7_1_fsm_table[SW1_SIZE_FSM_TABLE];
 	uint32_t crc32;
 } control_cfg_t;
 

@@ -28,7 +28,7 @@ extern "C"
      ******************************************************************************/
 
 // Specify number of buttons to use
-#define BUTTONS_QTY (11U)
+#define BUTTONS_QTY (13U)
 
 #define BUTTONS_CH0_EN            (ON)// SW1
 #define BUTTONS_GPIO_PORT_CH0     GPIOA
@@ -52,19 +52,19 @@ extern "C"
 #define BUTTONS_GPIO_PORT_CH3     GPIOA
 #define BUTTONS_GPIO_PIN_CH3      (GPIO_Pin_3)
 #define BUTTONS_GPIO_PIN_MODE_CH3 (GPIO_Mode_IPU)
-#define BUTTONS_ACTIVE_CH3        (BUTTONS_ACTIVE_STATE_HIGH)
+#define BUTTONS_ACTIVE_CH3        (BUTTONS_ACTIVE_STATE_LOW)
 
 #define BUTTONS_CH4_EN            (ON)// SW5
 #define BUTTONS_GPIO_PORT_CH4     GPIOA
 #define BUTTONS_GPIO_PIN_CH4      (GPIO_Pin_4)
 #define BUTTONS_GPIO_PIN_MODE_CH4 (GPIO_Mode_IPU)
-#define BUTTONS_ACTIVE_CH4        (BUTTONS_ACTIVE_STATE_HIGH)
+#define BUTTONS_ACTIVE_CH4        (BUTTONS_ACTIVE_STATE_LOW)
 
 #define BUTTONS_CH5_EN            (ON)// SW6
 #define BUTTONS_GPIO_PORT_CH5     GPIOA
 #define BUTTONS_GPIO_PIN_CH5      (GPIO_Pin_5)
 #define BUTTONS_GPIO_PIN_MODE_CH5 (GPIO_Mode_IPU)
-#define BUTTONS_ACTIVE_CH5        (BUTTONS_ACTIVE_STATE_HIGH)
+#define BUTTONS_ACTIVE_CH5        (BUTTONS_ACTIVE_STATE_LOW)
 
 #define BUTTONS_CH6_EN            (ON)// button of encoder SW7
 #define BUTTONS_GPIO_PORT_CH6     GPIOB
@@ -95,6 +95,18 @@ extern "C"
 #define BUTTONS_GPIO_PIN_CH10      (GPIO_Pin_8)
 #define BUTTONS_GPIO_PIN_MODE_CH10 (GPIO_Mode_IPD)
 #define BUTTONS_ACTIVE_CH10        (BUTTONS_ACTIVE_STATE_HIGH)
+
+#define BUTTONS_CH11_EN            (ON)// SW12
+#define BUTTONS_GPIO_PORT_CH11     GPIOB
+#define BUTTONS_GPIO_PIN_CH11      (GPIO_Pin_8)
+#define BUTTONS_GPIO_PIN_MODE_CH11 (GPIO_Mode_IPU)
+#define BUTTONS_ACTIVE_CH11        (BUTTONS_ACTIVE_STATE_LOW)
+
+#define BUTTONS_CH12_EN            (ON)// SW13
+#define BUTTONS_GPIO_PORT_CH12     GPIOB
+#define BUTTONS_GPIO_PIN_CH12      (GPIO_Pin_9)
+#define BUTTONS_GPIO_PIN_MODE_CH12 (GPIO_Mode_IPU)
+#define BUTTONS_ACTIVE_CH12        (BUTTONS_ACTIVE_STATE_LOW)
 
 /******************************************************************************
  * PUBLIC TYPES
