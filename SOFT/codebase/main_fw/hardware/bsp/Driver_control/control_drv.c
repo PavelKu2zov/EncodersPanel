@@ -34,7 +34,7 @@
 /******************************************************************************
  * DEFINES
  ******************************************************************************/
-#define MIDI_MARKER             (0xb4)
+#define MIDI_CREATE_CH_BYTE(ch) (0xb0 | (ch))
 #define MIDI_SIZE_FRAME         (0x03)
 #define SIZE_BUF_USART2         (256)
 #define TRIG_SCHMITT            (3U)
@@ -158,7 +158,7 @@ extern control_cfg_t control_cfg_default;
 /******************************************************************************
  * PRIVATE FUNCTION PROTOTYPES
  ******************************************************************************/
-static void       create_midi_frame(const uint8_t cc, const uint8_t data);
+static void create_midi_frame(const uint8_t midi_ch, const uint8_t cc, const uint8_t data);
 static STD_RESULT update_sw_buttons_input_prm(uint8_t sw_but_ch, sw1_input_prm_t * sw_input_prm, buttons_state_t * last_buttons_state_sw, uint8_t * n_cnt_trig_schmitt_sw);
 static STD_RESULT update_sw7_input_prm(void);
 static STD_RESULT update_sw9_input_prm(void);
@@ -180,9 +180,9 @@ static void USARTSend(const unsigned char * pucbufferUartTx, uint16_t size);
  * @param cc
  * @param data
  */
-static void create_midi_frame(const uint8_t cc, const uint8_t data)
+static void create_midi_frame(const uint8_t midi_ch, const uint8_t cc, const uint8_t data)
 {
-    bufferUartTx[0]  = MIDI_MARKER;
+    bufferUartTx[0]  = MIDI_CREATE_CH_BYTE(midi_ch);
     bufferUartTx[1U] = cc;
     bufferUartTx[2U] = data;
 }
@@ -637,70 +637,70 @@ void control_poll(void)
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW1_CH, &sw1_input_prm, &last_buttons_state_sw1, &n_cnt_trig_schmitt_sw1))
     {
         value = control_cfg.sw1_fsm_table[sw1_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW1, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW2_CH, &sw2_input_prm, &last_buttons_state_sw2, &n_cnt_trig_schmitt_sw2))
     {
         value = control_cfg.sw2_fsm_table[sw2_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW2, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW3_CH, &sw3_input_prm, &last_buttons_state_sw3, &n_cnt_trig_schmitt_sw3))
     {
         value = control_cfg.sw3_fsm_table[sw3_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW3, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW4_CH, &sw4_input_prm, &last_buttons_state_sw4, &n_cnt_trig_schmitt_sw4))
     {
         value = control_cfg.sw4_fsm_table[sw4_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW4, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW5_CH, &sw5_input_prm, &last_buttons_state_sw5, &n_cnt_trig_schmitt_sw5))
     {
         value = control_cfg.sw5_fsm_table[sw5_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW5, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW6_CH, &sw6_input_prm, &last_buttons_state_sw6, &n_cnt_trig_schmitt_sw6))
     {
         value = control_cfg.sw6_fsm_table[sw6_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW6, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw_buttons_input_prm(CONTROL_BUTTON_SW7_1_CH, &sw7_1_input_prm, &last_buttons_state_sw7_1, &n_cnt_trig_schmitt_sw7_1))
     {
         value = control_cfg.sw7_1_fsm_table[sw7_1_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW7_1, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw7_input_prm())
     {
         value = control_cfg.sw7_fsm_table[sw7_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW7, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
     
     if (RESULT_OK == update_sw9_input_prm())
     {
         value = control_cfg.sw9_fsm_table[sw9_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW9, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
 
     if (RESULT_OK == update_sw10_input_prm())
     {
         value = control_cfg.sw10_fsm_table[sw10_input_prm.R];
-        create_midi_frame(value.prm.cc, value.prm.data);
+        create_midi_frame(CONTROL_MIDI_CH_SW10, value.prm.cc, value.prm.data);
         USARTSend(bufferUartTx, MIDI_SIZE_FRAME);
     }
     else

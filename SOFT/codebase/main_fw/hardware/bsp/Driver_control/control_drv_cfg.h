@@ -678,6 +678,19 @@ extern "C"
 #define CONTROL_BUTTON_SW12_CH   (BUTTONS_CH11)
 #define CONTROL_BUTTON_SW13_CH   (BUTTONS_CH12)
 
+// Specify MIDI channel for SW
+#define CONTROL_MIDI_CH_SW1	 	 (0U)
+#define CONTROL_MIDI_CH_SW2	 	 (1U)
+#define CONTROL_MIDI_CH_SW3	 	 (2U)
+#define CONTROL_MIDI_CH_SW4	 	 (3U)
+#define CONTROL_MIDI_CH_SW5	 	 (4U)
+#define CONTROL_MIDI_CH_SW6	 	 (5U)
+#define CONTROL_MIDI_CH_SW7	 	 (6U)
+#define CONTROL_MIDI_CH_SW7_1    (7U)
+#define CONTROL_MIDI_CH_SW9	 	 (8U)
+#define CONTROL_MIDI_CH_SW10	 (9U)
+
+
 
 
 /******************************************************************************
