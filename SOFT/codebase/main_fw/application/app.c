@@ -24,6 +24,12 @@
 #include "encoder_drv.h"
 #include "buttons_drv.h"
 #include "control_drv.h"
+#include "stm32f10x.h"
+#include "string.h"
+#include "circ_buffer.h"
+#include "upl_cfg_service.h"
+
+
 
 /******************************************************************************
  * DEFINES
@@ -36,8 +42,7 @@
 /******************************************************************************
  * PRIVATE DATA
  ******************************************************************************/
-static encoder_state_t encoder_states[ENCODER_QTY_CH];
-static buttons_state_t buttons_state[BUTTONS_QTY];
+
 /******************************************************************************
  * PUBLIC DATA
  ******************************************************************************/
@@ -73,9 +78,13 @@ void app_entry_point(void)
     bsp_init();
     encoder_init();
     buttons_init();
+	control_init();
+	upl_cfg_srvc_init();
+
     for (;;)
     {
         control_poll();
+		upl_cfg_srvc_process();
         // Delay(250);
     }
 }
@@ -86,11 +95,52 @@ void app_entry_point(void)
  */
 void TIM3_IRQHandler(void)
 {
-    GPIO_SetBits(GPIOB, GPIO_Pin_10);
     encoder_calculate_rotations();
     TIM_ClearFlag(TIM3, TIM_FLAG_Update);
-    GPIO_ResetBits(GPIOB, GPIO_Pin_10);
 }
+
+void HardFault_Handler(void)
+{
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, DISABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+    GPIO_InitTypeDef GPIO_InitStruct;
+    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_9;
+    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    USART_InitTypeDef USART_InitStruct;
+    USART_InitStruct.USART_BaudRate            = 31250;
+    USART_InitStruct.USART_WordLength          = USART_WordLength_8b;
+    USART_InitStruct.USART_StopBits            = USART_StopBits_1;
+    USART_InitStruct.USART_Parity              = USART_Parity_No;
+    USART_InitStruct.USART_Mode                = USART_Mode_Tx;
+    USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_Init(USART1, &USART_InitStruct);
+    USART_Cmd(USART1, ENABLE);
+
+    int8_t msg[] = {"Hard Fault\n\r"};
+
+    while (true)
+    {
+        USART_SendData(USART1, 0xf0);
+        while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+            ;
+        for (uint16_t i = 0; i < strlen(msg); i++)
+        {
+            USART_SendData(USART1, msg[i]);
+            while (RESET == USART_GetFlagStatus(USART1, USART_FLAG_TXE))
+                ;
+        }
+        USART_SendData(USART1, 0xf7);
+
+        for (uint32_t i = 0; i < 0xfffff; i++)
+            ;
+    }
+}
+
+
 
 /******************************************************************************
  * END OF SOURCE'S CODE

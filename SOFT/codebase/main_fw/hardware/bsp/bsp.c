@@ -3,6 +3,7 @@
 #include "control_drv.h"
 
 extern uint8_t bufferUartTx[];
+static uint64_t bsp_current_time_ms = 0U;
 
 void bsp_init()
 {
@@ -13,13 +14,22 @@ void bsp_init()
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); // 36 MHz clock
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE); // 36 MHz clock
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
 
     /******************************** GPIO *********************/
     GPIO_InitTypeDef GPIO_InitStruct;
-    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_10; // Test pin
-    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_Out_PP;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+
+	// Uart3 tx
+    GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_10;
+    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_AF_PP;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	// Uart3 rx
+	GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_11;
+    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_10MHz;
     GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // Uart tx
@@ -79,16 +89,41 @@ void bsp_init()
     USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_Init(USART1, &USART_InitStruct);
 
-    USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+	/********************************Usart3***************************/
+    USART_InitStruct.USART_BaudRate            = 115200;
+    USART_InitStruct.USART_WordLength          = USART_WordLength_8b;
+    USART_InitStruct.USART_StopBits            = USART_StopBits_1;
+    USART_InitStruct.USART_Parity              = USART_Parity_No;
+    USART_InitStruct.USART_Mode                = USART_Mode_Tx | USART_Mode_Rx;
+    USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_Init(USART3, &USART_InitStruct);
+	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
 
-    /* Enable USART2 */
+	/********************************Systick***************************/
+	// 1 ms
+	SysTick_Config(9000);
+	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK_Div8);
+
+#if 0
+    USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+#endif
+    /* Enable USART1 */
     USART_Cmd(USART1, ENABLE);
+    /* Enable USART3 */
+    USART_Cmd(USART3, ENABLE);
+
     /********************************��������� NVIC******************************/
 
     NVIC_EnableIRQ(TIM3_IRQn);
     NVIC_InitTypeDef NVIC_InitStruct;
     NVIC_InitStruct.NVIC_IRQChannel                   = TIM3_IRQn;
     NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStruct.NVIC_IRQChannelSubPriority        = 0;
+    NVIC_InitStruct.NVIC_IRQChannelCmd                = ENABLE;
+    NVIC_Init(&NVIC_InitStruct);
+
+    NVIC_InitStruct.NVIC_IRQChannel                   = USART3_IRQn;
+    NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 2;
     NVIC_InitStruct.NVIC_IRQChannelSubPriority        = 0;
     NVIC_InitStruct.NVIC_IRQChannelCmd                = ENABLE;
     NVIC_Init(&NVIC_InitStruct);
@@ -110,4 +145,14 @@ void Delay(uint16_t time)
     while (SET != TIM_GetFlagStatus(TIM2, TIM_FLAG_Update))
         ;
     TIM_Cmd(TIM2, DISABLE);
+}
+
+void SysTick_Handler(void)
+{
+	bsp_current_time_ms++;
+}
+
+uint64_t bsp_get_current_time(void)
+{
+	return bsp_current_time_ms;
 }

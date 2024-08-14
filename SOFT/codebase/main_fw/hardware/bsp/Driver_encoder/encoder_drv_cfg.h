@@ -61,7 +61,7 @@ extern "C" {
 #define ENCODER_BIT_RESULT_POS_CH2                 (4U) 
 
 // Specify GPIO pin channel 3
-#define ENCODER_CH3_EN                             (ON)// Encoder #SW12
+#define ENCODER_CH3_EN                             (OFF)// Encoder #SW12
 #define ENCODER_GPIO_PORT_PIN0_CH3                 GPIOB
 #define ENCODER_GPIO_PORT_PIN1_CH3                 GPIOB
 #define ENCODER_GPIO_PIN_0_CH3                     (GPIO_Pin_8)

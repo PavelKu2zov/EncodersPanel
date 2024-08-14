@@ -55,6 +55,8 @@ static button_t buttons_cfg[BUTTONS_QTY] = {{BUTTONS_CH0_EN, BUTTONS_GPIO_PORT_C
                                             {BUTTONS_CH8_EN, BUTTONS_GPIO_PORT_CH8, BUTTONS_GPIO_PIN_CH8, BUTTONS_GPIO_PIN_MODE_CH8, BUTTONS_ACTIVE_CH8},
                                             {BUTTONS_CH9_EN, BUTTONS_GPIO_PORT_CH9, BUTTONS_GPIO_PIN_CH9, BUTTONS_GPIO_PIN_MODE_CH9, BUTTONS_ACTIVE_CH9},
                                             {BUTTONS_CH10_EN, BUTTONS_GPIO_PORT_CH10, BUTTONS_GPIO_PIN_CH10, BUTTONS_GPIO_PIN_MODE_CH10, BUTTONS_ACTIVE_CH10},
+                                            {BUTTONS_CH11_EN, BUTTONS_GPIO_PORT_CH11, BUTTONS_GPIO_PIN_CH11, BUTTONS_GPIO_PIN_MODE_CH11, BUTTONS_ACTIVE_CH11},
+                                            {BUTTONS_CH12_EN, BUTTONS_GPIO_PORT_CH12, BUTTONS_GPIO_PIN_CH12, BUTTONS_GPIO_PIN_MODE_CH12, BUTTONS_ACTIVE_CH12},
                                             };
 
 /******************************************************************************
